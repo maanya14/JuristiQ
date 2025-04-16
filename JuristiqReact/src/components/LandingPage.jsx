@@ -92,7 +92,7 @@ function LandingPage() {
 
             <div className="hero-image-container">
               <div className="hero-image">
-                <img src="https://www.hindustantimes.com/ht-img/img/2023/03/23/550x309/The-NJDG-is-a-part-of-the-ongoing-e-courts-integra_1679587800334.jpg" alt="Legal professionals using JuristiQ" />
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_9bsnXhcm73KOHnkUuhqLT0_p7Gqcrj33VQ&s" />
                 <div className="image-overlay"></div>
               </div>
 
@@ -102,7 +102,6 @@ function LandingPage() {
                 </div>
                 <div className="stats-text">
                   <p className="stats-label">Trusted by</p>
-                  <p className="stats-number">2,500+</p>
                   <p className="stats-description">Legal professionals</p>
                 </div>
               </div>
