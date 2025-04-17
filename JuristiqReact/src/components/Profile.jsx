@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react"
 import axios from "axios"
-import "./Profile.css"
+import "./profile.css"
 import SideBar from "./sideBar"
 
 function Profile() {
@@ -26,7 +26,7 @@ function Profile() {
   }, [])
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(`${API}/profile`, { 
+      const response = await axios.get(`${API}/profile", { 
         withCredentials: true 
       });
   
@@ -39,7 +39,7 @@ function Profile() {
   
   const fetchCaseStatistics = async () => {
     try {
-      const response = await axios.get(`${API}/getcases`,{withCredentials:true})
+      const response = await axios.get(`${API}/getcases",{withCredentials:true})
       const cases = response.data
       const casesHandled = cases.length
       const casesWon = cases.filter((c) => c.status.toLowerCase() === "won").length
@@ -56,7 +56,7 @@ function Profile() {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${API}/updateProfile`, advocate, { withCredentials: true })
+      await axios.put(`${API}/updateProfile", advocate, { withCredentials: true })
       alert("Profile updated successfully!")
       setEditMode(false)
       fetchProfile()
@@ -227,5 +227,7 @@ function Profile() {
 }
 
 export default Profile
+
+
 
 
