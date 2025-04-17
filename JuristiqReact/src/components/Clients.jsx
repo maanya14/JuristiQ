@@ -18,7 +18,7 @@ function Clients() {
   const fetchClients = async () => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`${API}/clients`, {
+      const response = await axios.get("https://juristiqbackend.onrender.com/clients", {
         withCredentials: true})
       console.log("Fetched Clients:", response.data)
       setClients(response.data)
@@ -39,7 +39,7 @@ function Clients() {
     }
 
     try {
-      const response = await axios.post(`${API}/createclient`, newClient, {
+      const response = await axios.post("https://juristiqbackend.onrender.com/createclient", newClient, {
         withCredentials: true})
       console.log("New Client Added:", response.data)
 
