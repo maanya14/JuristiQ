@@ -180,9 +180,7 @@ function LandingPage() {
           </div>
           <p className="footer-copyright">© {new Date().getFullYear()} JuristiQ. All rights reserved.</p>
           <div className="footer-links">
-            <a href="#">Twitter</a>
-            <a href="#">LinkedIn</a>
-            <a href="#">Facebook</a>
+            <p className="footer-text">Developed by Maanya Gupta & Devyani Sharma</p>
           </div>
         </div>
       </footer>
