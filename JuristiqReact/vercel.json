@@ -1,6 +1,9 @@
 {
     "rewrites": [
-      { "source": "/(.*)", "destination": "/" }
+      {
+        "source": "/((?!api|static|favicon.ico|assets|.*\\.js|.*\\.css|.*\\.map).*)",
+        "destination": "/"
+      }
     ]
   }
   
