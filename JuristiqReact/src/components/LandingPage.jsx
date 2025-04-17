@@ -92,7 +92,7 @@ function LandingPage() {
 
             <div className="hero-image-container">
               <div className="hero-image">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_9bsnXhcm73KOHnkUuhqLT0_p7Gqcrj33VQ&s" />
+                <img src="https://www.shutterstock.com/image-photo/law-theme-gavel-mallet-judge-600nw-2478909667.jpg" />
                 <div className="image-overlay"></div>
               </div>
 
