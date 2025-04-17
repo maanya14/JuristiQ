@@ -9,7 +9,7 @@ function Clients() {
   const [showForm, setShowForm] = useState(false)
   const [clients, setClients] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const API = import.meta.env.REACT_APP_API_URL // if using Vite
+    const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
   useEffect(() => {
     fetchClients()
@@ -238,6 +238,9 @@ function Clients() {
 }
 
 export default Clients
+
+
+
 
 
 
