@@ -26,7 +26,7 @@ function Profile() {
   }, [])
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(`${API}/profile", { 
+      const response = await axios.get(`${API}/profile`, { 
         withCredentials: true 
       });
   
