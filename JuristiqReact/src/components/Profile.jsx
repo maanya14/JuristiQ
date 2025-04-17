@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react"
 import axios from "axios"
-import "./profile.css"
+import "./Profile.css"
 import SideBar from "./sideBar"
 
 function Profile() {
