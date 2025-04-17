@@ -11,7 +11,6 @@ function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
-  const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
   const handleSignIn = async (e) => {
     e.preventDefault()
@@ -21,7 +20,7 @@ function LoginPage() {
     try {
 
       const response = await axios.post(
-        `${API}/login`,
+        "https://juristiqbackend.onrender.com/login",
         { email, password },
         { withCredentials: true } // To handle cookies (JWT authentication)
       );
@@ -147,6 +146,18 @@ function LoginPage() {
 }
 
 export default LoginPage
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

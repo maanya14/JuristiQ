@@ -148,7 +148,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {feedbackForm && (
+       {feedbackForm && (
         <section id="feedback" className="feedback-section">
           <div className="feedback-container">
             <div className="feedback-header">
@@ -168,7 +168,7 @@ function LandingPage() {
           </div>
         </section>
       )}
-
+      
       <footer className="footer-section">
         <div className="footer-container">
           <div className="footer-brand">

@@ -1,5 +1,3 @@
-"use client"
-
 import SideBar from "./sideBar"
 import { useState, useEffect } from "react"
 import axios from "axios"
@@ -10,31 +8,26 @@ function MyCases() {
   const [showForm, setShowForm] = useState(false)
   const [cases, setCases] = useState([])
   const [editingCase, setEditingCase] = useState(null) // Track the case being edited
-  const [isLoading, setIsLoading] = useState(true)
-
   const API = import.meta.env.REACT_APP_API_URL // if using Vite
-
 
   useEffect(() => {
     fetchCases()
   }, [])
 
   const fetchCases = async () => {
-    setIsLoading(true)
     try {
       const response = await axios.get(`${API}/getcases`, {
         withCredentials: true, // Ensures cookies are sent
-      })
-
-      console.log("Response Data:", response.data) // Debugging
-
-      setCases(response.data)
+      });
+  
+      console.log("Response Data:", response.data); // Debugging
+  
+      setCases(response.data);
     } catch (error) {
-      console.error("Error fetching cases:", error.response?.data || error)
-    } finally {
-      setIsLoading(false)
+      console.error("Error fetching cases:", error.response?.data || error);
     }
-  }
+  };
+  
 
   const handleClick = () => {
     setShowForm(!showForm)
@@ -67,7 +60,7 @@ function MyCases() {
         await axios.put(`${API}/updatecase/${editingCase.case_ref_no}`, newCase)
       } else {
         // Add New Case (POST request)
-        await axios.post(`${API}/createcase`, newCase, { withCredentials: true })
+        await axios.post(`${API}/createcase`, newCase ,{withCredentials: true})
       }
 
       // Reset the form and fetch updated data
@@ -171,78 +164,75 @@ function MyCases() {
       )}
 
       <div className={`table-container ${showForm ? "hidden" : ""}`}>
-        {isLoading ? (
-          <div className="loading-cases-container">
-            <div className="loading-cases-spinner"></div>
-          </div>
-        ) : cases.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>Case No.</th>
-                <th>Case Title</th>
-                <th>Client Name</th>
-                <th>Status</th>
-                <th>Next Hearing</th>
-                <th>Total Fees</th>
-                <th>Pending Fees</th>
-                <th>Actions</th>
+        <table>
+          <thead>
+            <tr>
+              <th>Case No.</th>
+              <th>Case Title</th>
+              <th>Client Name</th>
+              <th>Status</th>
+              <th>Next Hearing</th>
+              <th>Total Fees</th>
+              <th>Pending Fees</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cases.map((caseItem, index) => (
+              <tr key={index}>
+                <td>{caseItem.case_ref_no}</td>
+                <td>{caseItem.caseTitle}</td>
+                <td>{caseItem.clientName}</td>
+                <td>{caseItem.status}</td>
+                <td>{caseItem.nextHearing ? new Date(caseItem.nextHearing).toLocaleDateString("en-GB") : "N/A"}</td>
+                <td>{caseItem.fees}</td>
+                <td>{caseItem.pending_fees}</td>
+                <td>
+                  <button className="edit-btn" onClick={() => handleEdit(caseItem)}>
+                    Update
+                  </button>
+                  <button className="delete-btn" onClick={() => handleDelete(caseItem.case_ref_no)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {cases.map((caseItem, index) => (
-                <tr key={index}>
-                  <td>{caseItem.case_ref_no}</td>
-                  <td>{caseItem.caseTitle}</td>
-                  <td>{caseItem.clientName}</td>
-                  <td>{caseItem.status}</td>
-                  <td>{caseItem.nextHearing ? new Date(caseItem.nextHearing).toLocaleDateString("en-GB") : "N/A"}</td>
-                  <td>{caseItem.fees}</td>
-                  <td>{caseItem.pending_fees}</td>
-                  <td>
-                    <button className="edit-btn" onClick={() => handleEdit(caseItem)}>
-                      Update
-                    </button>
-                    <button className="delete-btn" onClick={() => handleDelete(caseItem.case_ref_no)}>
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="empty-cases-state">
-            <div className="empty-cases-icon-container">
-              <svg
-                className="empty-cases-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-            </div>
-            <h3>No cases yet</h3>
-            <p>Add your first case to get started</p>
-            <button onClick={() => setShowForm(true)} className="add-first-client-btn">
-              Add Case
-            </button>
-          </div>
-        )}
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
 }
 
 export default MyCases
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

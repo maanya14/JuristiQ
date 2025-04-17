@@ -4,19 +4,37 @@ const connectDB = require("./db"); // Import connection function
 // Connect to MongoDB
 connectDB();
 const nodemailer = require('nodemailer');
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const jwt = require('jsonwebtoken');
 const userModel = require("./models/user");
 const clientModel = require("./models/client");
 const FeesModel = require("./models/fees");
+const otpModel = require("./models/otpModel");
 
 const moment = require('moment');
 const twilio = require('twilio');
+app.set("trust proxy", 1);
 const cors = require("cors");
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-// Update with your frontend URL
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "https://one-famous-sculpin.ngrok-free.app","positive-liberal-treefrog.ngrok-free.app","personally-allowing-lacewing.ngrok-free.app",
+        "http://localhost:5173"
+      ];
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allow cookies/auth headers
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
 
 const postModel = require("./models/post");
 const casesModel = require("./models/cases");
@@ -31,65 +49,68 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.render("index");
 });
-
-
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://maanya_admin:maanya.g14@juristiq-cluster.wktdtbl.mongodb.net/?retryWrites=true&w=majority&appName=Juristiq-Cluster";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
-
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
-require('dotenv').config();
-const port = process.env.PORT || 10000;
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-
 app.get('/login', (req, res) => {
   res.render("login");
 })
 
 const isLoggedIn = (req, res, next) => {
-  console.log("Checking authentication...");
-  console.log("Cookies:", req.cookies); // Debugging
-  console.log("Headers:", req.headers); // Debugging
+  console.log("🔍 Checking authentication...");
+  console.log("🔍 Cookies:", req.cookies);
+  console.log("🔍 Headers:", req.headers);
 
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
   if (!token) {
-    console.log("❌ No token provided");
+    console.log("❌ No valid token found in cookies");
     return res.status(401).json({ error: "Unauthorized: No token provided" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
-    console.log("✅ Decoded User:", req.user); // Debugging
+    console.log("✅ Decoded User:", req.user) // Debugging
     next();
   } catch (error) {
-    console.log("❌ Token verification failed:", error);
+    console.log("❌ Token verification failed:", error.message);
     return res.status(403).json({ error: "Forbidden: Invalid token" });
   }
 };
 
+
+// app.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Find user by email
+//     const user = await userModel.findOne({ email });
+//     if (!user) {
+//       return res.status(401).json({ message: "User not found" });
+//     }
+
+//     // Compare hashed password
+//     const match = await bcrypt.compare(password, user.password);
+//     if (!match) {
+//       return res.status(401).json({ message: "Incorrect password" });
+//     }
+
+//     // Generate JWT token
+//     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+//     console.log("generated token", token);
+//     // Set token in HTTP-only cookie
+//     res.cookie("token", token, {
+//       httpOnly: true, // Prevents JavaScript access
+//       secure: false, // Set to true in production with HTTPS
+//       // sameSite: "lax", // Change to "none" if frontend & backend are on different domains
+//       sameSite: "None" // Needed for cross-site requests
+//     });
+
+//     res.json({ message: "Login successful" });
+
+//   } catch (error) {
+//     console.error("Login error:", error);
+//     res.sendStatus(500); // Internal server error
+//   }
+// });
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -107,22 +128,28 @@ app.post("/login", async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    console.log("generated token", token);
-    // Set token in HTTP-only cookie
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    console.log("Generated token:", token);
+
+    // Set cookie with token
     res.cookie("token", token, {
-      httpOnly: true, // Prevents JavaScript access
-      secure: false, // Set to true in production with HTTPS
-      sameSite: "lax", // Change to "none" if frontend & backend are on different domains
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Set to true for production
+      sameSite: "Lax" // For cross-origin requests
     });
 
-    res.json({ message: "Login successful" });
-
+    res.json({ message: "Login successful", token });
   } catch (error) {
-    console.error("Login error:", error);
-    res.sendStatus(500); // Internal server error
+    console.error("Login error:", error.message); // Log the error message
+    res.sendStatus(500);
   }
 });
+
 app.get("/getcases", isLoggedIn, async (req, res) => {
   console.log("req.user:", req.user); // Debugging
   if (!req.user) {
@@ -143,27 +170,63 @@ app.get("/getcases", isLoggedIn, async (req, res) => {
   }
 });
 
+// app.post('/register', async (req, res) => {
+//   let { name, age, email, password, secretString } = req.body;//so that you dont have to write req.body with variables again and again
+//   console.log(req.body);
 
+//   // let user = await userModel.deleteOne({ email });
+//   let existingUser = await userModel.findOne({ email });
+//   if (existingUser) return res.status(400).send("User already registered");
 
+//   // if(user) return res.status(500).send("user already registered");
+//   bcrypt.genSalt(10, (err, salt) => {
+//     bcrypt.hash(password, salt, async (err, hash) => {
+//       let user = await userModel.create({
+//         name,
+//         age,
+//         email,
+//         password: hash,
+//         secretString
+//       });
+//       let token = jwt.sign({ email: email, userid: user._id }, process.env.JWT_SECRET);
+//       res.cookie("token", token);
+//       res.send("registered");
+//     })
+//   })
+// });
 app.post('/register', async (req, res) => {
-  let { name, age, email, password, secretString } = req.body;//so that you dont have to write req.body with variables again and again
+  let { name, age, email, password, secretString } = req.body;
+  console.log("Received Registration Data:", req.body);
 
-  let user = await userModel.deleteOne({ email });
-  // if(user) return res.status(500).send("user already registered");
-  bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(password, salt, async (err, hash) => {
-      let user = await userModel.create({
-        name,
-        age,
-        email,
-        password: hash,
-        secretString
-      });
-      let token = jwt.sign({ email: email, userid: user._id }, process.env.JWT_SECRET);
-      res.cookie("token", token);
-      res.send("registered");
-    })
-  })
+  if (!name || !email || !password || !age || !secretString) {
+    return res.status(400).send("Missing required fields");
+  }
+
+  let existingUser = await userModel.deleteOne({ email });
+
+  try {
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    let user = await userModel.create({
+      name,
+      age,
+      email,
+      password: hashedPassword,
+      secretString
+    });
+
+    let token = jwt.sign({ email: email, userid: user._id }, process.env.JWT_SECRET);
+    res.cookie("token", token);
+    res.status(200).send("registered");
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).send("User already registered");
+    }
+    console.error("Error creating user:", error);
+    return res.status(500).send("Error creating user");
+  }
 });
 //  app.post('/post',isLoggedIn, async(req,res)=>{
 //       let user= await userModel.findOne({email: req.user.email});
@@ -193,21 +256,15 @@ app.get('/toknowc', async (req, res) => {
   let contents = await casesModel.find();
   res.send(contents);
 });
-app.get('/logout', (req, res) => {
-  res.cookie("token", "");
-  //making the cookie blank
-  res.redirect("/");
+app.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false, // true in production
+    sameSite: "Lax"
+  });
+  res.json({ message: "Logged out" });
 });
 
-//protected middleware
-//  function isLoggedIn(req,res, next){
-// if(req.cookies.token ==="") res.redirect("/login");
-// else{
-//  let data = jwt.verify(req.cookies.token, "secretString");
-//  req.user=data;
-//  next();
-// }
-//  }
 app.get('/read', async (req, res) => {
   const user = await userModel.findOne({ username: "xyz" });
   res.send(user);
@@ -279,87 +336,89 @@ app.post("/update/:id", isLoggedIn, async (req, res) => {
 
   res.redirect("/profile", otp);
 });
-
-// POST endpoint to create user and send OTP
 app.post("/advocate", async (req, res) => {
   const { name, email, age } = req.body;
-
+  console.log(req.body);
+  if (!name || !email || !age) {
+    return res.status(400).send("Name, email, and age are required.");
+  }
   try {
     // Generate OTP
-    const generateOtp = () => Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+    const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
     const otp = generateOtp();
-
-    // Save user with OTP in the database
-    const adv = await userModel.create({
-      name,
-      email,
-      age,
-      otp,
-    });
 
     console.log("Generated OTP:", otp); // Optional: For debugging purposes
 
     // Configure the transporter for nodemailer
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com", // SMTP server
-      port: 587, // 587 for TLS, 465 for SSL
-      secure: false, // true for SSL
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
       auth: {
-        user: "devyani04sh@gmail.com", // Sender email
-        pass: "bafg uosg gjze erua", // App password (not your email password)
+        user:process.env.EMAIL_USER,
+        pass:process.env.EMAIL_PASS,
       },
     });
 
     // Email options
     const mailOptions = {
-      from: "devyani04sh@gmail.com", // Sender email
-      to: email, // Recipient email
+      from: process.env.EMAIL_USER,
+      to: email,
       subject: "Your OTP Code",
-      text: `Hello, your OTP code is: ${otp}`, // Message with the OTP
+      text: `Hello, your OTP code is: ${otp}`,
     };
 
     // Send the email
-    transporter.sendMail(mailOptions, (err, info) => {
+    transporter.sendMail(mailOptions, async (err, info) => {
       if (err) {
         console.error("Error:", err);
         return res.status(500).send("Error sending email");
       } else {
         console.log("Email sent:", info.response);
+        // Temporarily store OTP in a cache or database without creating user
+        await otpModel.create({ email, otp });
         res.status(200).send("OTP sent successfully");
       }
     });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).send("Error creating advocate");
+    res.status(500).send("Error sending OTP");
   }
-
 });
 
-// POST endpoint to verify OTP
+// POST endpoint to verify OTP and create user
 app.post("/verifyotp", async (req, res) => {
-  const { email, otp } = req.body;
+  const { name, email, age, otp } = req.body;
 
   try {
-    // Find the user by email
-    const user = await userModel.findOne({ email });
+    // Find the OTP entry by email
+    const otpEntry = await otpModel.findOne({ email });
 
-    if (!user) {
-      return res.status(404).send("User not found");
+    if (!otpEntry) {
+      return res.status(404).send("OTP not found or expired");
     }
 
     // Compare the OTPs
-    if (user.otp === parseInt(otp, 10)) {
+    if (otpEntry.otp === parseInt(otp, 10)) {
       console.log("OTP verified successfully");
-      res.status(200).send("OTP verified successfully");
+      
+      // Create user only after OTP is verified
+      await userModel.create({ name, email, age });
+      
+      // Remove OTP entry after successful verification
+      await otpModel.deleteOne({ email });
+      
+      res.status(200).send("User created successfully");
     } else {
       console.log("Incorrect OTP");
-      await userModel.deleteOne({ email });
+      res.status(400).send("Incorrect OTP");
     }
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Error verifying OTP");
   }
 });
+
 app.get("/casesinfo", isLoggedIn, async (req, res) => {
   let info = await casesModel.find();
   res.send(info);
@@ -380,6 +439,7 @@ app.post("/createcase", isLoggedIn, async (req, res) => {
       fees,
       pending_fees,
     });
+    await newCase.save();
     user.cases.push(newCase._id);
 
     await user.save();
@@ -598,6 +658,8 @@ app.post("/createfee", isLoggedIn, async (req, res) => {
       remarks,
     });
 
+    await newFee.save();
+
 
     user.fees.push(newFee._id);
     await user.save();
@@ -668,8 +730,19 @@ app.delete("/deletefee/:id", async (req, res) => {
     res.status(500).json({ message: "Failed to delete fee record" });
   }
 });
+app.get("/verify-token", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "No token" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ valid: true, user: decoded });
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
 
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
 });

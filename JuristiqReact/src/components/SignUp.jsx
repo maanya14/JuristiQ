@@ -13,14 +13,18 @@ function SignUp() {
   const [otp, setOtp] = useState("")
   const [otpSent, setOtpSent] = useState(false)
   const [otpVerified, setOtpVerified] = useState(false)
- // const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
   const navigate = useNavigate()
 
   // Send OTP to user's email
   const handleEmailSubmit = async () => {
     try {
-      await axios.post("https://juristiqbackend.onrender.com/advocate", { email })
+      await axios.post("https://juristiqbackend.onrender.com/advocate", {
+        name,
+        email,
+        age,
+      });
+      
       setOtpSent(true)
       alert("OTP sent to your email!")
     } catch (error) {
@@ -32,7 +36,7 @@ function SignUp() {
   // Verify OTP
   const handleOtpSubmit = async () => {
     try {
-      const response = await axios.post("https://juristiqbackend.onrender.com/verifyotp", { email, otp })
+      const response = await axios.post("https://juristiqbackend.onrender.com/verifyotp", { name,email,age, otp })
       if (response.status === 200) {
         setOtpVerified(true)
         alert("OTP Verified! You can now create a password.")
@@ -179,6 +183,13 @@ function SignUp() {
 }
 
 export default SignUp
+
+
+
+
+
+
+
 
 
 

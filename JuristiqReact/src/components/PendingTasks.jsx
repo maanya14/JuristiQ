@@ -3,7 +3,7 @@ import axios from "axios";
 
 function PendingTasks() {
   const [pendingCases, setPendingCases] = useState([]);
-  const API = import.meta.env.REACT_APP_API_URL // if using Vite
+    const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
   useEffect(() => {
     const fetchPendingCases = async () => {
@@ -37,4 +37,5 @@ function PendingTasks() {
 }
 
 export default PendingTasks;
+
 

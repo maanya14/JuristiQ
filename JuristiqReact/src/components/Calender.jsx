@@ -5,7 +5,7 @@ import "react-calendar/dist/Calendar.css";
 import "./calender.css"; 
 function Calender() {
   const [hearingDate, setHearingDates] = useState([]);
-  const API = import.meta.env.REACT_APP_API_URL // if using Vite
+    const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
   useEffect(() => {
     const fetchHearingDates = async () => {

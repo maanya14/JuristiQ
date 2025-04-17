@@ -1,53 +1,47 @@
-"use client"
-
-import SideBar from "./sideBar"
-import { useState, useEffect } from "react"
-import axios from "axios"
-import "./sideBar.css"
-import "./Fees.css"
+import SideBar from "./sideBar";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import "./sideBar.css";
+import "./Fees.css";
 
 function Fees() {
-  const [showForm, setShowForm] = useState(false)
-  const [fees, setFees] = useState([])
-  const [editingFee, setEditingFee] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const API = import.meta.env.REACT_APP_API_URL // if using Vite
+  const [showForm, setShowForm] = useState(false);
+  const [fees, setFees] = useState([]);
+  const [editingFee, setEditingFee] = useState(null);
+    const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
   useEffect(() => {
-    fetchFees()
-  }, [])
+    fetchFees();
+  }, []);
 
   const fetchFees = async () => {
-    setIsLoading(true)
     try {
-      const response = await axios.get(`${API}/getfees`, { withCredentials: true })
-      setFees(response.data)
+      const response = await axios.get(`${API}/getfees`,{withCredentials: true});
+      setFees(response.data);
     } catch (error) {
-      console.error("Error fetching fees:", error)
-    } finally {
-      setIsLoading(false)
+      console.error("Error fetching fees:", error);
     }
-  }
+  };
 
   const formatDate = (isoString) => {
-    if (!isoString) return ""
-    const date = new Date(isoString)
-    return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0]
-  }
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
+  };
 
   const handleClick = () => {
-    setShowForm(!showForm)
-    setEditingFee(null)
-  }
+    setShowForm(!showForm);
+    setEditingFee(null);
+  };
 
   const handleEdit = (fee) => {
-    setEditingFee(fee)
-    setShowForm(true)
-  }
+    setEditingFee(fee);
+    setShowForm(true);
+  };
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault()
-    const formData = new FormData(e.target)
+    e.preventDefault();
+    const formData = new FormData(e.target);
     const feeData = {
       case_ref_no: formData.get("case_ref_no"),
       clientName: formData.get("clientName"),
@@ -57,46 +51,38 @@ function Fees() {
       payment_mode: formData.get("mode"),
       due_date: formData.get("duedate"),
       remarks: formData.get("remarks"),
-    }
+    };
 
     try {
       if (editingFee) {
-        await axios.put(`${API}/updatefee/${editingFee._id}`, feeData)
+        await axios.put(`${API}/updatefee/${editingFee._id}`, feeData);
       } else {
-        await axios.post(`${API}/createfee`, feeData, { withCredentials: true })
+        await axios.post(`${API}/createfee`, feeData,{withCredentials: true});
       }
-      setShowForm(false)
-      fetchFees()
+      setShowForm(false);
+      fetchFees();
     } catch (error) {
-      console.error("Error processing fee record:", error)
-      alert("Error processing request. Try again.")
+      console.error("Error processing fee record:", error);
+      alert("Error processing request. Try again.");
     }
-  }
+  };
 
   const handleDelete = async (fee) => {
-    if (!window.confirm("Are you sure you want to delete this fee record?")) return
+    if (!window.confirm("Are you sure you want to delete this fee record?")) return;
     try {
-      await axios.delete(`${API}/deletefee/${fee._id}`)
-      fetchFees()
+      await axios.delete(`${API}/deletefee/${fee._id}`);
+      fetchFees();
     } catch (error) {
-      console.error("Error deleting fee record:", error)
-      alert("Failed to delete record. Try again.")
+      console.error("Error deleting fee record:", error);
+      alert("Failed to delete record. Try again.");
     }
-  }
+  };
 
   return (
     <div className="fee-management-container">
       <SideBar />
       <button onClick={handleClick} className="add-case-button">
-        <svg
-          className="plus-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+        <svg className="plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="16"></line>
           <line x1="8" y1="12" x2="16" y2="12"></line>
@@ -137,85 +123,50 @@ function Fees() {
               <label>Remarks:</label>
               <textarea name="remarks" rows="4" defaultValue={editingFee?.remarks || ""}></textarea>
 
-              <button type="submit" className="submit-btn">
-                {editingFee ? "Update" : "Submit"}
-              </button>
+              <button type="submit" className="submit-btn">{editingFee ? "Update" : "Submit"}</button>
             </form>
           </div>
         </>
       )}
 
       <div className={`table-container ${showForm ? "hidden" : ""}`}>
-        {isLoading ? (
-          <div className="loading-fee-container">
-            <div className="loading-fee-spinner"></div>
-          </div>
-        ) : fees.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>Case No.</th>
-                <th>Client Name</th>
-                <th>Total Fees</th>
-                <th>Amount Paid</th>
-                <th>Pending Fees</th>
-                <th>Payment Mode</th>
-                <th>Due Date</th>
-                <th>Remarks</th>
-                <th>Actions</th>
+        <table>
+          <thead>
+            <tr>
+              <th>Case No.</th>
+              <th>Client Name</th>
+              <th>Total Fees</th>
+              <th>Amount Paid</th>
+              <th>Pending Fees</th>
+              <th>Payment Mode</th>
+              <th>Due Date</th>
+              <th>Remarks</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fees.map((fee) => (
+              <tr key={fee._id}>
+                <td>{fee.case_ref_no}</td>
+                <td>{fee.clientName}</td>
+                <td>{fee.fees}</td>
+                <td>{fee.amount_paid}</td>
+                <td>{fee.pending_fees}</td>
+                <td>{fee.payment_mode}</td>
+                <td>{formatDate(fee.due_date)}</td>
+                <td>{fee.remarks}</td>
+                <td>
+                  <button className="edit-fee-btn" onClick={() => handleEdit(fee)}>Edit</button>
+                  <button className="delete-fee-btn" onClick={() => handleDelete(fee)}>Delete</button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {fees.map((fee) => (
-                <tr key={fee._id}>
-                  <td>{fee.case_ref_no}</td>
-                  <td>{fee.clientName}</td>
-                  <td>{fee.fees}</td>
-                  <td>{fee.amount_paid}</td>
-                  <td>{fee.pending_fees}</td>
-                  <td>{fee.payment_mode}</td>
-                  <td>{formatDate(fee.due_date)}</td>
-                  <td>{fee.remarks}</td>
-                  <td>
-                    <button className="edit-fee-btn" onClick={() => handleEdit(fee)}>
-                      Edit
-                    </button>
-                    <button className="delete-fee-btn" onClick={() => handleDelete(fee)}>
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="empty-fee-state">
-            <div className="empty-fee-icon-container">
-              <svg
-                className="empty-fee-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                <line x1="2" y1="10" x2="22" y2="10"></line>
-                <line x1="7" y1="15" x2="8" y2="15"></line>
-                <line x1="11" y1="15" x2="12" y2="15"></line>
-              </svg>
-            </div>
-            <h3>No fees recorded yet</h3>
-            <p>Add your first fee record to get started</p>
-            <button onClick={() => setShowForm(true)} className="add-first-fee-btn">
-              Add Fee
-            </button>
-          </div>
-        )}
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
-  )
+  );
 }
 
-export default Fees
+export default Fees;
+
