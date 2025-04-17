@@ -159,7 +159,7 @@ function LandingPage() {
               <label>Email</label>
               <input placeholder="Enter your email" type="email" value={feedbackData.email} name="email" onChange={handleInputChange} required />
               <label>Your feedback</label>
-              <textarea placeholder="Enter your feedback" value={feedbackData.email} name="feedback" rows="6" onChange={handleInputChange} required />
+              <textarea placeholder="Enter your feedback" value={feedbackData.feed} name="feedback" rows="6" onChange={handleInputChange} required />
               <div className="button-container">
                 <button type="submit" className="submit-button">Send</button>
                 <button type="button" className="submit-button" onClick={() => showFeedbackForm(false)}>Cancel</button>
