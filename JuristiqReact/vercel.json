@@ -1,7 +1,7 @@
 {
     "rewrites": [
       {
-        "source": "/((?!api|getfees|createfee|updatefee|deletefee|getclients|createclient|updateclient|deleteclient|getcases|createcase|updatecase|deletecase|gethearings|createhearing|updatehearing|deletehearing|static|.*\\..*).*)",
+        "source": "/((?!api|getfees|pendingcases|createfee|updatefee|deletefee|getclients|createclient|updateclient|deleteclient|getcases|createcase|updatecase|deletecase|gethearings|createhearing|updatehearing|deletehearing|hearings|static|.*\\..*).*)",
         "destination": "/index.html"
       }
     ]
