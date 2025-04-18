@@ -1,8 +1,7 @@
-
-import { useState, useEffect } from "react"
-import axios from "axios"
-import "./Profile.css"
-import SideBar from "./sideBar"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import "./Profile.css";
+import SideBar from "./sideBar";
 
 function Profile() {
   const [advocate, setAdvocate] = useState({
@@ -13,74 +12,85 @@ function Profile() {
     casesHandled: 0,
     casesWon: 0,
     profilePic: "",
-  })
-  const [editMode, setEditMode] = useState(false)
-  const API = import.meta.env.REACT_APP_API_URL // if using Vite
+  });
+  const [editMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState(true);  // Add loading state
+  const [error, setError] = useState(null);  // Add error state
+  const API = import.meta.env.VITE_APP_API_URL || 'http://default-api-url.com';
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchProfile()
-      await fetchCaseStatistics()
-    }
-    fetchData()
-  }, [])
+      try {
+        await fetchProfile();
+        await fetchCaseStatistics();
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Failed to load data. Please try again later.");
+      } finally {
+        setLoading(false);  // Set loading state to false when fetching completes
+      }
+    };
+    fetchData();
+  }, []);
+
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(`${API}/profile`, { 
-        withCredentials: true 
-      });
-  
-      console.log("Profile Data from Backend:", response.data); // ✅ Log fetched data
+      const response = await axios.get(`${API}/profile`, { withCredentials: true });
       setAdvocate((prev) => ({ ...prev, ...response.data }));
     } catch (error) {
       console.error("Error fetching profile:", error.response?.data || error.message);
+      setError("Failed to fetch profile.");
     }
   };
-  
+
   const fetchCaseStatistics = async () => {
     try {
-      const response = await axios.get(`${API}/getcases`,{withCredentials:true})
-      const cases = response.data
-      const casesHandled = cases.length
-      const casesWon = cases.filter((c) => c.status.toLowerCase() === "won").length
+      const response = await axios.get(`${API}/getcases`, { withCredentials: true });
+      const cases = response.data;
+      const casesHandled = cases.length;
+      const casesWon = cases.filter((c) => c.status.toLowerCase() === "won").length;
 
       setAdvocate((prev) => ({
         ...prev,
         casesHandled: casesHandled || prev.casesHandled,
         casesWon: casesWon || prev.casesWon,
-      }))
+      }));
     } catch (error) {
-      console.error("Error fetching case statistics:", error)
+      console.error("Error fetching case statistics:", error);
+      setError("Failed to fetch case statistics.");
     }
-  }
+  };
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${API}/updateProfile`, advocate, { withCredentials: true })
-      alert("Profile updated successfully!")
-      setEditMode(false)
-      fetchProfile()
+      await axios.put(`${API}/updateProfile`, advocate, { withCredentials: true });
+      alert("Profile updated successfully!");
+      setEditMode(false);
+      fetchProfile();
     } catch (error) {
-      console.error("Error updating profile:", error)
+      console.error("Error updating profile:", error);
+      setError("Failed to update profile.");
     }
-  }
+  };
 
   const handleProfilePicUpload = (event) => {
-    const file = event.target.files[0]
+    const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setAdvocate((prev) => ({ ...prev, profilePic: reader.result }))
-      }
-      reader.readAsDataURL(file)
+        setAdvocate((prev) => ({ ...prev, profilePic: reader.result }));
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const calculateSuccessRate = () => {
-    if (advocate.casesHandled === 0) return 0
-    return Math.round((advocate.casesWon / advocate.casesHandled) * 100)
-  }
+    if (advocate.casesHandled === 0) return 0;
+    return Math.round((advocate.casesWon / advocate.casesHandled) * 100);
+  };
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
   return (
     <div className="profile-page">
       <SideBar />

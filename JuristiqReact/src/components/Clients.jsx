@@ -1,4 +1,3 @@
-"use client"
 
 import { useState, useEffect } from "react"
 import axios from "axios"
@@ -11,25 +10,25 @@ function Clients() {
   const [isLoading, setIsLoading] = useState(true)
     //const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
-  useEffect(() => {
-    fetchClients()
-  }, [])
-
-  const fetchClients = async () => {
-    setIsLoading(true)
-    try {
-      const response = await axios.get("https://juristiqbackend.onrender.com/clients", {
-        withCredentials: true})
-      console.log("Fetched Clients:", response.data)
-      setClients(response.data.clients)
-    } catch (error) {
-      console.error("Error fetching clients:", error)
-      setClients([]);
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
+    useEffect(() => {
+      fetchClients();
+    }, []);
+    
+    const fetchClients = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get("https://juristiqbackend.onrender.com/clients", { withCredentials: true });
+        console.log("Fetched Clients:", response.data);
+        setClients(response.data.clients);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+        alert("Error fetching clients, please try again later.");
+        setClients([]); // Clear out clients in case of error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     const formData = new FormData(e.target)
