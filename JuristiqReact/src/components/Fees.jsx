@@ -20,6 +20,7 @@ function Fees() {
       setFees(response.data);
     } catch (error) {
       console.error("Error fetching fees:", error);
+      setFees([]);
     }
   };
 
@@ -145,23 +146,30 @@ function Fees() {
             </tr>
           </thead>
           <tbody>
-            {fees.map((fee) => (
-              <tr key={fee._id}>
-                <td>{fee.case_ref_no}</td>
-                <td>{fee.clientName}</td>
-                <td>{fee.fees}</td>
-                <td>{fee.amount_paid}</td>
-                <td>{fee.pending_fees}</td>
-                <td>{fee.payment_mode}</td>
-                <td>{formatDate(fee.due_date)}</td>
-                <td>{fee.remarks}</td>
-                <td>
-                  <button className="edit-fee-btn" onClick={() => handleEdit(fee)}>Edit</button>
-                  <button className="delete-fee-btn" onClick={() => handleDelete(fee)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {Array.isArray(fees) && fees.length > 0 ? (
+    fees.map((fee) => (
+      <tr key={fee._id}>
+        <td>{fee.case_ref_no}</td>
+        <td>{fee.clientName}</td>
+        <td>{fee.fees}</td>
+        <td>{fee.amount_paid}</td>
+        <td>{fee.pending_fees}</td>
+        <td>{fee.payment_mode}</td>
+        <td>{formatDate(fee.due_date)}</td>
+        <td>{fee.remarks}</td>
+        <td>
+          <button className="edit-fee-btn" onClick={() => handleEdit(fee)}>Edit</button>
+          <button className="delete-fee-btn" onClick={() => handleDelete(fee)}>Delete</button>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="9" style={{ textAlign: "center" }}>No fee records found.</td>
+    </tr>
+  )}
+</tbody>
+
         </table>
       </div>
     </div>

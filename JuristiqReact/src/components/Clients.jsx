@@ -21,9 +21,10 @@ function Clients() {
       const response = await axios.get("https://juristiqbackend.onrender.com/clients", {
         withCredentials: true})
       console.log("Fetched Clients:", response.data)
-      setClients(response.data)
+      setClients(response.data.clients)
     } catch (error) {
       console.error("Error fetching clients:", error)
+      setClients([]);
     } finally {
       setIsLoading(false)
     }
@@ -72,7 +73,7 @@ function Clients() {
           </div>
         ) : (
           <div className="clients-grid">
-            {clients.length > 0 ? (
+            {Array.isArray(clients) && clients.length > 0 ? (
               clients.map((client, index) => (
                 <div key={index} className="client-card" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="card-header">

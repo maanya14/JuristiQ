@@ -12,6 +12,7 @@ function PendingTasks() {
         setPendingCases(response.data);
       } catch (error) {
         console.error("Error fetching pending cases:", error);
+        setPendingCases([]);
       }
     };
 
@@ -21,7 +22,7 @@ function PendingTasks() {
   return (
     <div className="tasks">
       <h2>Pending Cases</h2>
-      {pendingCases.length > 0 ? (
+      {Array.isArray(pendingCases) && pendingCases.length > 0 ? (
         <ul>
           {pendingCases.map((c, index) => (
             <li key={index}>
@@ -34,6 +35,7 @@ function PendingTasks() {
       )}
     </div>
   );
+  
 }
 
 export default PendingTasks;

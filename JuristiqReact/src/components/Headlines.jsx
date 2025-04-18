@@ -20,6 +20,7 @@ function Headlines() {
         setHeadlines(response.data.articles);
       } catch (error) {
         console.error("Error fetching news:", error);
+        setHeadlines([]);
       }
     };
   
@@ -34,16 +35,21 @@ function Headlines() {
     <div className="headlines">
       <h2>Latest News</h2>
       <ul>
-        {headlines.map((article, index) => (
-          <li key={index}>
-            <a href={article.url} target="_blank" rel="noopener noreferrer">
-              {article.title}
-            </a>
-          </li>
-        ))}
+        {Array.isArray(headlines) && headlines.length > 0 ? (
+          headlines.map((article, index) => (
+            <li key={index}>
+              <a href={article.url} target="_blank" rel="noopener noreferrer">
+                {article.title}
+              </a>
+            </li>
+          ))
+        ) : (
+          <li>No headlines available</li>
+        )}
       </ul>
     </div>
   );
+  
 }
 
 export default Headlines;
