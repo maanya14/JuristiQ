@@ -22,7 +22,6 @@ function Clients() {
         setClients(response.data.clients);
       } catch (error) {
         console.error("Error fetching clients:", error);
-        alert("Error fetching clients, please try again later.");
         setClients([]); // Clear out clients in case of error
       } finally {
         setIsLoading(false);
