@@ -1,0 +1,9 @@
+{
+    "rewrites": [
+      {
+        "source": "/((?!api|getfees|createfee|updatefee|deletefee|getclients|createclient|updateclient|deleteclient|getcases|createcase|updatecase|deletecase|gethearings|createhearing|updatehearing|deletehearing|static|.*\\..*).*)",
+        "destination": "/index.html"
+      }
+    ]
+  }
+  
