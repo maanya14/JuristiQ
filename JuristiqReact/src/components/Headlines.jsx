@@ -20,7 +20,6 @@ function Headlines() {
         setHeadlines(response.data.articles);
       } catch (error) {
         console.error("Error fetching news:", error);
-        setHeadlines([]);
       }
     };
   
