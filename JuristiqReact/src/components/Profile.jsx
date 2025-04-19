@@ -62,7 +62,9 @@ function Profile() {
       alert("Profile updated successfully!")
   
       await fetchProfile() // ✅ wait for fresh data to load
+      console.log("fetching");
       setEditMode(false)   // ✅ switch out of edit mode AFTER reloading
+      console.log("riderecting");
     } catch (error) {
       console.error("Error updating profile:", error)
     }
