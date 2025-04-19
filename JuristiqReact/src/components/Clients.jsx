@@ -54,7 +54,6 @@ function Clients() {
     }
   }
 
-this is the code
   return (
     <div className="app-container">
       <SideBar />
