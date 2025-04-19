@@ -9,19 +9,23 @@ function Headlines() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get("https://newsapi.org/v2/everything", {
+        const response = await axios.get("https://api.rss2json.com/v1/api.json", {
           params: {
-            q: "law",
-            sortBy: "publishedAt",
-            pageSize: 5,
-            apiKey: "3b058bd8af81404bbc2c32e60d145351",
+            rss_url: "https://news.google.com/rss/search?q=law",
           },
         });
-        setHeadlines(response.data.articles);
+    
+        const articles = response.data.items.map((item) => ({
+          title: item.title,
+          url: item.link,
+        }));
+    
+        setHeadlines(articles);
       } catch (error) {
         console.error("Error fetching news:", error);
       }
     };
+    
   
     fetchNews(); // Initial fetch
   
