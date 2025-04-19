@@ -8,7 +8,7 @@ function Fees() {
   const [showForm, setShowForm] = useState(false);
   const [fees, setFees] = useState([]);
   const [editingFee, setEditingFee] = useState(null);
-  //const API = import.meta.env.REACT_APP_API_URL // if using Vite
+  const API = process.env.REACT_APP_API_URL // if using Vite
 
   useEffect(() => {
     fetchFees();
@@ -16,7 +16,7 @@ function Fees() {
 
   const fetchFees = async () => {
     try {
-      const response = await axios.get("https://juristiqbackend.onrender.com/getfees",{withCredentials: true});
+      const response = await axios.get(`${API}/getfees`,{withCredentials: true});
       setFees(response.data);
     } catch (error) {
       console.error("Error fetching fees:", error);
@@ -48,7 +48,6 @@ function Fees() {
       clientName: formData.get("clientName"),
       fees: formData.get("totalFees"),
       amount_paid: formData.get("amountPaid"),
-      pending_fees: formData.get("pendingFees"),
       payment_mode: formData.get("mode"),
       due_date: formData.get("duedate"),
       remarks: formData.get("remarks"),
@@ -56,9 +55,9 @@ function Fees() {
 
     try {
       if (editingFee) {
-        await axios.put(`https://juristiqbackend.onrender.com/updatefee/${editingFee._id}`, feeData);
+        await axios.put(`${API}/updatefee/${editingFee._id}`, feeData);
       } else {
-        await axios.post("https://juristiqbackend.onrender.com/createfee", feeData,{withCredentials: true});
+        await axios.post(`${API}/createfee`, feeData,{withCredentials: true});
       }
       setShowForm(false);
       fetchFees();
@@ -71,7 +70,7 @@ function Fees() {
   const handleDelete = async (fee) => {
     if (!window.confirm("Are you sure you want to delete this fee record?")) return;
     try {
-      await axios.delete(`https://juristiqbackend.onrender.com/deletefee/${fee._id}`);
+      await axios.delete(`${API}/deletefee/${fee._id}`);
       fetchFees();
     } catch (error) {
       console.error("Error deleting fee record:", error);
@@ -107,9 +106,6 @@ function Fees() {
 
               <label>Amount Paid:</label>
               <input type="number" name="amountPaid" min="1" defaultValue={editingFee?.amount_paid || ""} required />
-
-              <label>Pending Fees:</label>
-              <input type="number" name="pendingFees" min="1" defaultValue={editingFee?.pending_fees || ""} required />
 
               <label>Payment Mode:</label>
               <select name="mode" defaultValue={editingFee?.payment_mode || ""} required>
@@ -153,7 +149,7 @@ function Fees() {
         <td>{fee.clientName}</td>
         <td>{fee.fees}</td>
         <td>{fee.amount_paid}</td>
-        <td>{fee.pending_fees}</td>
+        <td>{fee.fees - fee.amount_paid}</td>
         <td>{fee.payment_mode}</td>
         <td>{formatDate(fee.due_date)}</td>
         <td>{fee.remarks}</td>
