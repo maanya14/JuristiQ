@@ -46,7 +46,7 @@ function MyCases() {
       status: formData.get("status"),
       nextHearing: formData.get("hearingDate") ? new Date(formData.get("hearingDate")).toISOString() : null,
       fees: Number(formData.get("totalFees")),
-      pending_fees: Number(formData.get("pendingFees")),
+      amount_paid: Number(formData.get("amountPaid")),
     }
 
     // Basic Form Validation
@@ -153,8 +153,8 @@ function MyCases() {
               <label>Total fees:</label>
               <input type="number" name="totalFees" required defaultValue={editingCase?.fees} />
 
-              <label>Pending fees:</label>
-              <input type="number" name="pendingFees" required defaultValue={editingCase?.pending_fees} />
+              <label>Amount Paid:</label>
+              <input type="number" name="amountPaid" required defaultValue={editingCase?.amount_paid} />
 
               <button className="submit-case" type="submit">
                 {editingCase ? "Update" : "Submit"}
@@ -188,7 +188,7 @@ function MyCases() {
         <td>{caseItem.status}</td>
         <td>{caseItem.nextHearing ? new Date(caseItem.nextHearing).toLocaleDateString("en-GB") : "N/A"}</td>
         <td>{caseItem.fees}</td>
-        <td>{caseItem.pending_fees}</td>
+       <td>{caseItem.fees - caseItem.amount_paid}</td>
         <td>
           <button className="edit-btn" onClick={() => handleEdit(caseItem)}>
             Update
