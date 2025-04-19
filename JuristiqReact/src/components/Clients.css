@@ -46,7 +46,7 @@
   .page-header h1 {
     font-size: 1.875rem;
     font-weight: 700;
-    color: #111827;
+    color: #262829;
     margin-bottom: 8px;
   }
   
@@ -68,7 +68,7 @@
     height: 3rem;
     border-radius: 50%;
     border: 2px solid #e5e7eb;
-    border-top-color: #111827;
+    border-top-color: #262829;
     animation: spin 1s linear infinite;
   }
   
@@ -128,7 +128,7 @@
   }
   
   .card-header {
-    background: linear-gradient(to right, #1f2937, #111827);
+    background: linear-gradient(to right, #35373a, #202124);
     padding: 16px 24px;
     display: flex;
     align-items: center;
@@ -145,14 +145,14 @@
   .user-icon {
     height: 24px;
     width: 24px;
-    color: #1f2937;
+    color: #262829;
   }
   
   .case-badge {
     font-size: 0.75rem;
     font-weight: 500;
     background-color: white;
-    color: #1f2937;
+    color: #262829;
     padding: 4px 8px;
     border-radius: 9999px;
   }
@@ -164,7 +164,7 @@
   .card-content h2 {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #111827;
+    color: black;
     margin-bottom: 16px;
   }
   
