@@ -9,7 +9,7 @@ const ForgetPassword = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const API = import.meta.env.REACT_APP_API_URL // if using Vite
+  //const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +17,7 @@ const ForgetPassword = () => {
     setLoading(true);
   
     try {
-      const response = await axios.post(`${API}/existing`, { email, secretString });
+      const response = await axios.post("https://juristiqbackend.onrender.com/existing", { email, secretString });
   
       console.log("API Response:", response.data); // Debugging response
       setMessage(response.data.message);
