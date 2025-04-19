@@ -19,7 +19,7 @@ function Clients() {
       try {
         const response = await axios.get("https://juristiqbackend.onrender.com/clients", { withCredentials: true });
         console.log("Fetched Clients:", response.data);
-        setClients(response.data.clients);
+        setClients([...clients, data.client]);
       } catch (error) {
         console.error("Error fetching clients:", error);
         setClients([]); // Clear out clients in case of error
