@@ -134,7 +134,7 @@ function LoginPage() {
                 <span>Or</span>
               </div>
 
-              <button type="button" className="signup-button" onClick={handleSignUp}>
+              <button type="button" className="create-button" onClick={handleSignUp}>
                 Create an account
               </button>
             </form>

@@ -71,7 +71,7 @@ function LandingPage() {
           </nav>
 
           <div className="header-actions">
-            <button className="login-button" onClick={handleGetStarted}>Log In</button>
+            <button className="landing-login-button" onClick={handleGetStarted}>Log In</button>
             <button className="signup-button" onClick={handleSignUp}>Sign Up</button>
           </div>
         </div>

@@ -325,7 +325,7 @@ input:focus {
   font-size: 14px;
 }
 
-.signup-button {
+.create-button {
   height: 50px;
   background-color: black;
   color: white;
@@ -336,11 +336,11 @@ input:focus {
   transition: background-color 0.2s, transform 0.2s;
 }
 
-.signup-button:hover {
+.create-button:hover {
   background-color: #1a1a1a;
 }
 
-.signup-button:active {
+.create-button:active {
   transform: scale(0.98);
 }
 
@@ -386,6 +386,7 @@ input:focus {
 @media (min-width: 271px) and (max-width: 380px) {
   .login-container {
     flex-direction: column;
+    align-items: center;
     padding: 1rem;
     overflow-y: auto;
   }
@@ -416,6 +417,7 @@ input:focus {
 @media (min-width: 381px) and (max-width: 520px) {
   .login-container {
     flex-direction: column;
+    align-items: center;
     padding: 1.5rem;
     overflow-y: auto;
   }
@@ -437,10 +439,10 @@ input:focus {
     font-size: 0.9rem;
     padding: 0.8rem;
   }
-  .login-button {
+  /* .login-button {
     font-size: 0.9rem;
     padding: 0.8rem;
-  }
+  } */
 }
 
 @media (min-width: 521px) and (max-width: 640px) {

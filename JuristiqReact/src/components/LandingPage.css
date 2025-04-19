@@ -97,7 +97,9 @@
   }
   
   .main-navigation {
-    display: none;
+    display: flex; /* change from none to flex */
+    flex-direction: row; /* for stacking vertically on small screens */
+    gap: 8px;
   }
   
   @media (min-width: 768px) {
@@ -105,6 +107,7 @@
       display: flex;
       gap: 32px;
     }
+   
   }
   
   .main-navigation a {
@@ -122,8 +125,7 @@
     gap: 16px;
   }
   
-  .login-button {
-    display: none;
+  .landing-login-button {
     height: 40px;
     padding: 0 24px;
     background-color: #000;
@@ -136,14 +138,14 @@
   }
   
   @media (min-width: 768px) {
-    .login-button {
+    .landing-login-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
   }
   
-  .login-button:hover {
+  .landing-login-button:hover {
     background-color: #333;
   }
   
@@ -688,5 +690,33 @@ textarea{
 
   .feedback-container{
     padding: 10px;
+  }
+}
+@media (max-width: 468px) {
+  .main-navigation {
+    flex-direction: column; /* stack links vertically */
+    align-items: center; /* center align items */
+    gap: 12px; /* increase gap for better touch targets */
+ 
+  }
+
+  .header-actions {
+    flex-direction: column; /* stack buttons vertically */
+    align-items: center;
+    gap: 12px;
+  }
+  .header-actions button {
+    font-size: 10px;
+    padding: 10px;
+  }
+
+  .main-navigation a {
+    font-size: 15px; /* slightly larger text for mobile */
+  }
+
+  .landing-login-button,
+  .signup-button {
+    width: 100%; /* full-width buttons for better UX */
+    max-width: 200px;
   }
 }
