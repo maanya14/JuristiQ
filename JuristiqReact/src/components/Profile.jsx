@@ -60,13 +60,14 @@ function Profile() {
     try {
       await axios.put("https://juristiqbackend.onrender.com/updateProfile", advocate, { withCredentials: true })
       alert("Profile updated successfully!")
-      setEditMode(false)
-      fetchProfile()
+  
+      await fetchProfile() // ✅ wait for fresh data to load
+      setEditMode(false)   // ✅ switch out of edit mode AFTER reloading
     } catch (error) {
       console.error("Error updating profile:", error)
     }
   }
-
+  
   const handleProfilePicUpload = (event) => {
     const file = event.target.files[0]
     if (file) {
