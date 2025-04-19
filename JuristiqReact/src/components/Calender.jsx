@@ -4,13 +4,13 @@ import axios from "axios";
 import "react-calendar/dist/Calendar.css";
 import "./calender.css"; 
 function Calender() {
-  const [hearingDate, setHearingDates] = useState([]);
-    const API = import.meta.env.REACT_APP_API_URL // if using Vite
+const [hearingDate, setHearingDates] = useState([]);
+//const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
   useEffect(() => {
     const fetchHearingDates = async () => {
       try {
-        const response = await axios.get(`${API}/hearings`, { withCredentials: true });
+        const response = await axios.get("https://juristiqbackend.onrender.com/hearings", { withCredentials: true });
 
         console.log("Fetched hearing dates:", response.data); // Debugging log
 

@@ -14,19 +14,24 @@ function Clients() {
       fetchClients();
     }, []);
     
-    const fetchClients = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get("https://juristiqbackend.onrender.com/clients", { withCredentials: true });
-        console.log("Fetched Clients:", response.data);
-        setClients(response.data.clients);
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-        setClients([]); // Clear out clients in case of error
-      } finally {
-        setIsLoading(false);
-      }
-    };
+const fetchClients = async () => {
+  setIsLoading(true);
+  try {
+    const response = await axios.get("https://juristiqbackend.onrender.com/clients", { withCredentials: true });
+    console.log("Fetched Clients:", response.data);
+
+    // If the response is an object, convert it into an array
+    const clientsData = Array.isArray(response.data) ? response.data : [response.data];
+    setClients(clientsData); // Directly update the state with the data
+
+  } catch (error) {
+    console.error("Error fetching clients:", error);
+    setClients([]); // Clear out clients in case of error
+  } finally {
+    setIsLoading(false);
+  }
+};
+
     
   const handleFormSubmit = async (e) => {
     e.preventDefault()
