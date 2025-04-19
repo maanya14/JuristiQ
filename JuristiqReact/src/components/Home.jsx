@@ -18,8 +18,10 @@ function Home() {
             <Headlines />
           </div>
         </div>
-        <div className="pending-tasks-container">
-          <PendingTasks />
+        <div className="lower-content">
+          <div className="pending-tasks-container">
+            <PendingTasks />
+          </div>
         </div>
       </div>
     </div>

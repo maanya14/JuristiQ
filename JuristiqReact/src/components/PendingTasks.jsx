@@ -21,7 +21,7 @@ function PendingTasks() {
 
   return (
     <div className="tasks">
-      <h2>Pending Cases</h2>
+      <h2>Pending Cases</h2><br/>
       {Array.isArray(pendingCases) && pendingCases.length > 0 ? (
         <ul>
           {pendingCases.map((c, index) => (

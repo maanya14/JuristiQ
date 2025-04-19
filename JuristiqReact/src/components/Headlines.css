@@ -4,7 +4,8 @@
     align-items: center;
     justify-content: flex-start; /* Align content at the top */
     height: 300px;
-    width: 420px;
+    /* width: 80%; */
+    padding: 20px;
     border-radius: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); 
     padding: 20px;
@@ -80,7 +81,7 @@
 }
 @media screen and (max-width: 950px) {
     .headlines {
-        width: 90%; /* Reduce width */
+        width: 100%; /* Reduce width */
         height: auto;
         padding: 15px;
     }

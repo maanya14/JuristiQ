@@ -9,7 +9,7 @@
     max-width: 1200px;
   }
   
-  .upper-content {
+  .upper-content,.lower-content {
     display: flex;
     flex-wrap: wrap;
     gap: 30px;
@@ -27,6 +27,9 @@
     color: white;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
+  }
+  .pending-tasks-container{
+    padding: 30px;
   }
   
   .calendar-container:hover,

@@ -8,24 +8,26 @@ function Headlines() {
 
   useEffect(() => {
     const fetchNews = async () => {
-      try {
-        const response = await axios.get("https://api.rss2json.com/v1/api.json", {
-          params: {
-            rss_url: "https://news.google.com/rss/search?q=law",
-          },
-        });
-    
-        const articles = response.data.items.map((item) => ({
-          title: item.title,
-          url: item.link,
-        }));
-    
-        setHeadlines(articles);
-      } catch (error) {
-        console.error("Error fetching news:", error);
-      }
-    };
-    
+  try {
+    const response = await axios.get("https://api.rss2json.com/v1/api.json", {
+      params: {
+        rss_url: "https://news.google.com/rss/search?q=law",
+      },
+    });
+
+    const articles = response.data.items
+    .slice(0, 5) // Only take top 5
+    .map((item) => ({
+      title: item.title,
+      url: item.link,
+    }));
+
+    setHeadlines(articles);
+  } catch (error) {
+    console.error("Error fetching news:", error);
+  }
+};
+
   
     fetchNews(); // Initial fetch
   
