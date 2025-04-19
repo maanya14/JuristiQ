@@ -89,10 +89,10 @@ function Clients() {
                         <circle cx="12" cy="7" r="4"></circle>
                       </svg>
                     </div>
-                    <span className="case-badge">Case #{client.case_ref_no}</span>
+                    <span className="case-badge">Case #{clients.case_ref_no}</span>
                   </div>
                   <div className="card-content">
-                    <h2>{client.client_name}</h2>
+                    <h2>{clients.client_name}</h2>
                     <div className="client-details">
                       <div className="detail-item">
                         <svg
@@ -106,7 +106,7 @@ function Clients() {
                         >
                           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                         </svg>
-                        <span>{client.phone}</span>
+                        <span>{clients.phone}</span>
                       </div>
                       <div className="detail-item">
                         <svg
@@ -124,7 +124,7 @@ function Clients() {
                           <line x1="16" y1="17" x2="8" y2="17"></line>
                           <polyline points="10 9 9 9 8 9"></polyline>
                         </svg>
-                        <span>Case Ref: {client.case_ref_no}</span>
+                        <span>Case Ref: {clients.case_ref_no}</span>
                       </div>
                     </div>
                     <div className="card-footer">
