@@ -133,7 +133,6 @@ const fetchClients = async () => {
                       </div>
                     </div>
                     <div className="card-footer">
-                      <button className="view-details-btn">View Details</button>
                     </div>
                   </div>
                 </div>

@@ -186,13 +186,7 @@ function MyCases() {
         <td>{caseItem.caseTitle}</td>
         <td>{caseItem.clientName}</td>
         <td>{caseItem.status}</td>
-        <td>
-          {caseItem.status === "won" || caseItem.status === "closed" 
-            ? "N/A" 
-            : caseItem.nextHearing 
-            ? new Date(caseItem.nextHearing).toLocaleDateString("en-GB") 
-            : "N/A"}
-        </td>
+        <td>{caseItem.nextHearing ? new Date(caseItem.nextHearing).toLocaleDateString("en-GB") : "N/A"}</td>
         <td>{caseItem.fees}</td>
         <td>{caseItem.pending_fees}</td>
         <td>
@@ -212,8 +206,7 @@ function MyCases() {
   )}
 </tbody>
 
-
-        </table>
+</table>
       </div>
     </div>
   )
