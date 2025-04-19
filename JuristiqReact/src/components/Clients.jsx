@@ -11,48 +11,49 @@ function Clients() {
     //const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
     useEffect(() => {
-      fetchClients();
-    }, []);
-    
-    const fetchClients = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get("https://juristiqbackend.onrender.com/clients", { withCredentials: true });
-        console.log("Fetched Clients:", response.data);
-        setClients([...clients, data.client]);
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-        setClients([]); // Clear out clients in case of error
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
+    fetchClients();
+  }, []);
+
+  // Function to fetch clients from the server
+  const fetchClients = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("https://juristiqbackend.onrender.com/clients", { withCredentials: true });
+      console.log("Fetched Clients:", response.data);
+      setClients(prevClients => [...prevClients, ...response.data.clients]); // Assuming response.data.clients is an array
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      setClients([]); // Clear out clients in case of error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to handle form submission and add a new client
   const handleFormSubmit = async (e) => {
-    e.preventDefault()
-    const formData = new FormData(e.target)
+    e.preventDefault();
+    const formData = new FormData(e.target);
     const newClient = {
       client_name: formData.get("clientName"),
       phone: formData.get("phone"),
       case_ref_no: formData.get("case_ref_no"),
-    }
+    };
 
     try {
-      const response = await axios.post("https://juristiqbackend.onrender.com/createclient", newClient, {
-        withCredentials: true})
-      console.log("New Client Added:", response.data)
+      const response = await axios.post("https://juristiqbackend.onrender.com/createclient", newClient, { withCredentials: true });
+      console.log("New Client Added:", response.data);
 
       // Update state to reflect the new client
-      setClients((prevClients) => [...prevClients, response.data])
+      setClients((prevClients) => [...prevClients, response.data]);
 
       // Hide the form after submission
-      setShowForm(false)
-      e.target.reset() // Clear form fields
+      setShowForm(false);
+      e.target.reset(); // Clear form fields
     } catch (error) {
-      console.error("Error adding client:", error)
-      alert("Error adding client. Try again.")
+      console.error("Error adding client:", error);
+      alert("Error adding client. Try again.");
     }
-  }
+  };
 
   return (
     <div className="app-container">
