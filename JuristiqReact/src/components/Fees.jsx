@@ -120,7 +120,7 @@ function Fees() {
               <label>Remarks:</label>
               <textarea name="remarks" rows="4" defaultValue={editingFee?.remarks || ""}></textarea>
 
-              <button type="submit" className="submit-btn">{editingFee ? "Update" : "Submit"}</button>
+              <button type="submit" className="submit-fee">{editingFee ? "Update" : "Submit"}</button>
             </form>
           </div>
         </>
