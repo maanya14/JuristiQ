@@ -44,7 +44,7 @@ function SignUp() {
     } catch (error) {
       alert("Invalid OTP. Try again.")
       console.error("OTP Verification error:", error)
-      window.location.reload() // Reload the page if OTP is wrong
+      //window.location.reload() // Reload the page if OTP is wrong
     }
   }
 
