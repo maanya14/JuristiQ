@@ -375,11 +375,13 @@ app.post("/advocate", async (req, res) => {
     };
 
     // Send the email using promises
-    await transporter.sendMail(mailOptions);
+    console.log("Attempting to send email...");
+    const result= await transporter.sendMail(mailOptions);
+    console.log("Mail result:", result);
     console.log("Email sent successfully to:", email);
     
     // Temporarily store OTP in database without creating user
-    //await otpModel.create({ email, otp });
+    await otpModel.create({ email, otp });
     res.status(200).send("OTP sent successfully");
     
   } catch (error) {
