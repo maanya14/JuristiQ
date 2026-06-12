@@ -359,9 +359,7 @@ app.post("/advocate", async (req, res) => {
 
     // Configure the transporter for nodemailer
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
+      service: "gmail",
       auth: {
         user: "maanya.g14@gmail.com",
         pass: "flxevvhdvlbkanvf",
@@ -381,7 +379,7 @@ app.post("/advocate", async (req, res) => {
     console.log("Email sent successfully to:", email);
     
     // Temporarily store OTP in database without creating user
-    await otpModel.create({ email, otp });
+    //await otpModel.create({ email, otp });
     res.status(200).send("OTP sent successfully");
     
   } catch (error) {
