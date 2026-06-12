@@ -364,7 +364,7 @@ app.post("/advocate", async (req, res) => {
       secure: false,
       auth: {
         user: "maanya.g14@gmail.com",
-        pass: "flxe vvhd vlbk anvf",
+        pass: "flxevvhdvlbkanvf",
       },
     });
 
