@@ -4,7 +4,7 @@ const connectDB = require("./db"); // Import connection function
 // Connect to MongoDB
 connectDB();
 const nodemailer = require('nodemailer');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const jwt = require('jsonwebtoken');
@@ -334,20 +334,28 @@ app.get("/edit/:id", isLoggedIn, async (req, res) => {
 app.post("/update/:id", isLoggedIn, async (req, res) => {
   let post = await postModel.findOneAndUpdate({ _id: req.params.id }, { content: req.body.content })
 
-  res.redirect("/profile", otp);
+  res.redirect("/profile");
 });
 app.post("/advocate", async (req, res) => {
   const { name, email, age } = req.body;
   console.log(req.body);
+  
   if (!name || !email || !age) {
     return res.status(400).send("Name, email, and age are required.");
   }
+
   try {
+    // Validate environment variables
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("Email credentials not configured in environment variables");
+      return res.status(500).send("Email service is not configured");
+    }
+
     // Generate OTP
     const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
     const otp = generateOtp();
 
-    console.log("Generated OTP:", otp); // Optional: For debugging purposes
+    console.log("Generated OTP:", otp);
 
     // Configure the transporter for nodemailer
     const transporter = nodemailer.createTransport({
@@ -355,8 +363,8 @@ app.post("/advocate", async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user:process.env.EMAIL_USER,
-        pass:process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
@@ -368,21 +376,17 @@ app.post("/advocate", async (req, res) => {
       text: `Hello, your OTP code is: ${otp}`,
     };
 
-    // Send the email
-    transporter.sendMail(mailOptions, async (err, info) => {
-      if (err) {
-        console.error("Error:", err);
-        return res.status(500).send("Error sending email");
-      } else {
-        console.log("Email sent:", info.response);
-        // Temporarily store OTP in a cache or database without creating user
-        await otpModel.create({ email, otp });
-        res.status(200).send("OTP sent successfully");
-      }
-    });
+    // Send the email using promises
+    await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully to:", email);
+    
+    // Temporarily store OTP in database without creating user
+    await otpModel.create({ email, otp });
+    res.status(200).send("OTP sent successfully");
+    
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Error sending OTP");
+    console.error("Error sending OTP:", error);
+    res.status(500).send("Error sending OTP: " + error.message);
   }
 });
 
