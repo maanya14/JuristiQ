@@ -346,10 +346,10 @@ app.post("/advocate", async (req, res) => {
 
   try {
     // Validate environment variables
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error("Email credentials not configured in environment variables");
-      return res.status(500).send("Email service is not configured");
-    }
+    // if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    //   console.error("Email credentials not configured in environment variables");
+    //   return res.status(500).send("Email service is not configured");
+    // }
 
     // Generate OTP
     const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
@@ -363,14 +363,14 @@ app.post("/advocate", async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: "maanya.g14@gmail.com",
+        pass: "flxe vvhd vlbk anvf",
       },
     });
 
     // Email options
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: "maanya.g14@gmail.com",
       to: email,
       subject: "Your OTP Code",
       text: `Hello, your OTP code is: ${otp}`,
