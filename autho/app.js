@@ -338,6 +338,28 @@ app.post("/update/:id", isLoggedIn, async (req, res) => {
   res.redirect("/profile");
 });
 
+app.get("/test-email", async (req, res) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.verify();
+
+    console.log("SMTP verified");
+    res.send("SMTP OK");
+  } catch (err) {
+    console.error("VERIFY ERROR:", err);
+    res.status(500).send(err.message);
+  }
+});
+
 app.post("/advocate", async (req, res) => {
   const { name, email, age } = req.body;
   console.log(req.body);
@@ -364,16 +386,16 @@ app.post("/advocate", async (req, res) => {
 
     // Configure the transporter for nodemailer
     const transporter = nodemailer.createTransport({
-  host: "gmail",
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+      host: "gmail",
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+    });
     await transporter.verify();
     console.log("SMTP verified");
 
@@ -400,15 +422,7 @@ app.post("/advocate", async (req, res) => {
     res.status(500).send("Error sending OTP: " + error.message);
   }
 });
-app.get("/test-email", async (req, res) => {
-  try {
-    await transporter.verify();
-    res.send("SMTP OK");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send(err.message);
-  }
-});
+
 // POST endpoint to verify OTP and create user
 app.post("/verifyotp", async (req, res) => {
   const { name, email, age, otp } = req.body;
