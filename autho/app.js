@@ -337,6 +337,15 @@ app.post("/update/:id", isLoggedIn, async (req, res) => {
 
   res.redirect("/profile");
 });
+app.get("/test-email", async (req, res) => {
+  try {
+    await transporter.verify();
+    res.send("SMTP OK");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
 app.post("/advocate", async (req, res) => {
   const { name, email, age } = req.body;
   console.log(req.body);
@@ -363,8 +372,7 @@ app.post("/advocate", async (req, res) => {
 
     // Configure the transporter for nodemailer
     const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
+  host: "gmail",
   secure: false,
   auth: {
     user: process.env.EMAIL_USER,
