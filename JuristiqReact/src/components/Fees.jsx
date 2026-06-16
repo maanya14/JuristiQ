@@ -16,7 +16,7 @@ function Fees() {
 
   const fetchFees = async () => {
     try {
-      const response = await axios.get("https://juristiqbackend.onrender.com/getfees",{withCredentials: true});
+      const response = await axios.get("https://juristiq.onrender.com/getfees",{withCredentials: true});
       setFees(response.data);
     } catch (error) {
       console.error("Error fetching fees:", error);
@@ -55,9 +55,9 @@ function Fees() {
 
     try {
       if (editingFee) {
-        await axios.put(`https://juristiqbackend.onrender.com/updatefee/${editingFee._id}`, feeData);
+        await axios.put(`https://juristiq.onrender.com/updatefee/${editingFee._id}`, feeData);
       } else {
-        await axios.post("https://juristiqbackend.onrender.com/createfee", feeData,{withCredentials: true});
+        await axios.post("https://juristiq.onrender.com/createfee", feeData,{withCredentials: true});
       }
       setShowForm(false);
       fetchFees();
@@ -70,7 +70,7 @@ function Fees() {
   const handleDelete = async (fee) => {
     if (!window.confirm("Are you sure you want to delete this fee record?")) return;
     try {
-      await axios.delete(`https://juristiqbackend.onrender.com/deletefee/${fee._id}`);
+      await axios.delete(`https://juristiq.onrender.com/deletefee/${fee._id}`);
       fetchFees();
     } catch (error) {
       console.error("Error deleting fee record:", error);

@@ -8,7 +8,7 @@ function PendingTasks() {
   useEffect(() => {
     const fetchPendingCases = async () => {
       try {
-        const response = await axios.get("https://juristiqbackend.onrender.com/pendingcases", { withCredentials: true });
+        const response = await axios.get("https://juristiq.onrender.com/pendingcases", { withCredentials: true });
         setPendingCases(response.data);
       } catch (error) {
         console.error("Error fetching pending cases:", error);
