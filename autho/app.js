@@ -392,10 +392,7 @@ app.post("/advocate", async (req, res) => {
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
+      }
     });
     await transporter.verify();
     console.log("SMTP verified");
