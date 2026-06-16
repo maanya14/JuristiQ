@@ -370,7 +370,7 @@ app.post("/advocate", async (req, res) => {
 
   try {
     // Validate environment variables
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!process.env.BREVO_USER || !process.env.BREVO_PASS) {
       console.error("Email credentials not configured in environment variables");
       return res.status(500).send("Email service is not configured");
     }
@@ -380,8 +380,8 @@ app.post("/advocate", async (req, res) => {
     const otp = generateOtp();
 
     console.log("Generated OTP:", otp);
-    console.log("EMAIL_USER:", process.env.EMAIL_USER);
-    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+    console.log("BREVO_USER:", process.env.BREVO_USER);
+    console.log("BREVO_PASS exists:", !!process.env.BREVO_PASS);
     
 
     // Configure the transporter for nodemailer
@@ -399,7 +399,7 @@ app.post("/advocate", async (req, res) => {
 
     // Email options
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: process.env.BREVO_USER,
       to: email,
       subject: "Your OTP Code",
       text: `Hello, your OTP code is: ${otp}`,
