@@ -357,6 +357,9 @@ app.post("/advocate", async (req, res) => {
     const otp = generateOtp();
 
     console.log("Generated OTP:", otp);
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+    
 
     // Configure the transporter for nodemailer
     const transporter = nodemailer.createTransport({
@@ -371,6 +374,8 @@ app.post("/advocate", async (req, res) => {
   greetingTimeout: 10000,
   socketTimeout: 10000,
 });
+    await transporter.verify();
+    console.log("SMTP verified");
 
     // Email options
     const mailOptions = {
