@@ -139,8 +139,8 @@ app.post("/login", async (req, res) => {
     // Set cookie with token
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Set to true for production
-      sameSite: "Lax" // For cross-origin requests
+      secure: true, // Set to true for production
+      sameSite: "None" // For cross-origin requests
     });
 
     res.json({ message: "Login successful", token });
@@ -259,8 +259,8 @@ app.get('/toknowc', async (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: false, // true in production
-    sameSite: "Lax"
+    secure: true, // true in production
+    sameSite: "None"
   });
   res.json({ message: "Logged out" });
 });
@@ -322,7 +322,7 @@ app.get("/like/:id", isLoggedIn, async (req, res) => {
   }
   else {
     post.likes.splice(post.likes.indexOf(req.user.userid), 1);
-  } ƒ
+  } 
 
   await post.save();
   res.redirect("/profile");
@@ -346,10 +346,10 @@ app.post("/advocate", async (req, res) => {
 
   try {
     // Validate environment variables
-    // if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    //   console.error("Email credentials not configured in environment variables");
-    //   return res.status(500).send("Email service is not configured");
-    // }
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("Email credentials not configured in environment variables");
+      return res.status(500).send("Email service is not configured");
+    }
 
     // Generate OTP
     const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
@@ -361,14 +361,14 @@ app.post("/advocate", async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "maanya.g14@gmail.com",
-        pass: "flxevvhdvlbkanvf",
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     // Email options
     const mailOptions = {
-      from: "maanya.g14@gmail.com",
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "Your OTP Code",
       text: `Hello, your OTP code is: ${otp}`,
@@ -747,6 +747,8 @@ app.get("/verify-token", (req, res) => {
 });
 
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
