@@ -21,6 +21,7 @@ app.use(
   cors({
     origin: function (origin, callback) {
       const allowedOrigins = [
+        "https://juristi-q.vercel.app",
         "https://one-famous-sculpin.ngrok-free.app","positive-liberal-treefrog.ngrok-free.app","personally-allowing-lacewing.ngrok-free.app",
         "http://localhost:5173"
       ];
