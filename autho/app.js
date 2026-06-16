@@ -337,15 +337,7 @@ app.post("/update/:id", isLoggedIn, async (req, res) => {
 
   res.redirect("/profile");
 });
-app.get("/test-email", async (req, res) => {
-  try {
-    await transporter.verify();
-    res.send("SMTP OK");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send(err.message);
-  }
-});
+
 app.post("/advocate", async (req, res) => {
   const { name, email, age } = req.body;
   console.log(req.body);
@@ -408,7 +400,15 @@ app.post("/advocate", async (req, res) => {
     res.status(500).send("Error sending OTP: " + error.message);
   }
 });
-
+app.get("/test-email", async (req, res) => {
+  try {
+    await transporter.verify();
+    res.send("SMTP OK");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
 // POST endpoint to verify OTP and create user
 app.post("/verifyotp", async (req, res) => {
   const { name, email, age, otp } = req.body;
