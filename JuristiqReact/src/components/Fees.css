@@ -1,347 +1,272 @@
+/* ===========================
+   Layout
+=========================== */
 .fee-management-container {
-    position: relative;
-    width: 100%;
-    min-height: 100vh;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ===========================
+   Modal Form
+   Fees.jsx reuses .case-form / .case-box from Mycases.css,
+   so only fee-specific overrides live here.
+=========================== */
+.submit-fee {
+  padding: 0.7rem;
+  background-color: #111827;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background-color 0.2s;
+}
+
+.submit-fee:hover {
+  background-color: #374151;
+}
+
+/* ===========================
+   Table Area
+=========================== */
+.fee-table-container {
+  margin-left: 280px;
+  margin-top: 24px;
+  margin-right: 24px;
+  padding-bottom: 80px;
+}
+
+.fee-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.fee-thead {
+  background: #111827;
+}
+
+.fee-th,
+.fee-td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.fee-th {
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.fee-td {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.fee-tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.fee-tbody tr:hover {
+  background: #eaeaea;
+  transition: background 0.2s;
+}
+
+/* ===========================
+   Action Buttons
+=========================== */
+.edit-fee-btn,
+.delete-fee-btn {
+  padding: 5px 11px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  margin: 2px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.edit-fee-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.delete-fee-btn {
+  background: #dc2626;
+  color: white;
+}
+
+.edit-fee-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-fee-btn:hover {
+  background: #b91c1c;
+}
+
+/* ===========================
+   Empty State
+=========================== */
+.empty-fee-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 16rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  padding: 32px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  margin-left: 280px;
+  margin-top: 24px;
+  margin-right: 24px;
+}
+
+.empty-fee-icon-container {
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.empty-fee-icon {
+  height: 32px;
+  width: 32px;
+  color: #6b7280;
+}
+
+.empty-fee-state h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.empty-fee-state p {
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.add-first-fee-btn {
+  padding: 8px 16px;
+  background-color: #111827;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-first-fee-btn:hover {
+  background-color: #374151;
+}
+
+/* ===========================
+   Loading State
+=========================== */
+.loading-fee-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16rem;
+  margin-left: 280px;
+  margin-top: 24px;
+  margin-right: 24px;
+}
+
+.loading-fee-spinner {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  border-top-color: #111827;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-  
-  .fee-form {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    z-index: 50;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    max-width: 90vw;
-    max-height: 90vh;
-    overflow-y: auto;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+@media (max-width: 860px) {
+  .fee-table-container,
+  .empty-fee-state,
+  .loading-fee-container {
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-top: 70px;
   }
-  
-  .fee-box {
-    padding: 10px;
-    text-align: center;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  label {
-    font-size: 0.9rem;
-    text-align: left;
-    font-weight: 500;
-  }
-  
-  input,
-  select {
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    width: 100%;
-  }
-  
-  .submit-fee {
-    padding: 0.7rem;
-    background-color: black;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.2s;
-  }
-  
-  .submit-fee:hover {
-    background-color: #1d1c1c;
-  }
-  
-  .fee-table-container {
-    width: 90%;
-    margin: 5px auto;
-    min-height: 70vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .fee-table {
-    margin-left: 300px;
-    margin-top: 20px;
-    width: 77%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    position: absolute;
-    left: 5px;
-    top: 5px;
-  }
-  
-  .fee-thead {
-    background: black;
-  }
-  
+
   .fee-th,
   .fee-td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    font-size: 13px;
+    padding: 10px 10px;
   }
-  
-  .fee-th {
-    color: white;
+}
+
+@media (max-width: 520px) {
+  .fee-th,
+  .fee-td {
+    font-size: 12px;
+    padding: 8px 8px;
   }
-  
-  .fee-tbody tr:last-child td {
-    border-bottom: none;
-  }
-  
-  .fee-tbody tr:hover {
-    background: #eaeaea;
-    transition: 0.3s;
-  }
-  
+
   .edit-fee-btn,
   .delete-fee-btn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    margin: 2px;
-    transition: all 0.3s ease-in-out;
+    padding: 4px 8px;
+    font-size: 12px;
   }
-  
-  .edit-fee-btn {
-    background: #007bff;
-    color: white;
+}
+
+@media (max-width: 320px) {
+  .fee-th,
+  .fee-td {
+    font-size: 11px;
+    padding: 6px 6px;
   }
-  
-  .delete-fee-btn {
-    background: #dc3545;
-    color: white;
-  }
-  
-  .edit-fee-btn:hover {
-    background: #0056b3;
-  }
-  
-  .delete-fee-btn:hover {
-    background: #b22222;
-  }
-  
-  /* Empty State */
-  .empty-fee-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 16rem;
-    background-color: white;
-    border-radius: 0.75rem;
-    border: 1px solid #e5e7eb;
-    padding: 32px;
-    width: 77%;
-    margin-left: 300px;
-    margin-top: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .empty-fee-icon-container {
-    background-color: #f3f4f6;
-    border-radius: 50%;
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-  
-  .empty-fee-icon {
-    height: 32px;
-    width: 32px;
-    color: #6b7280;
-  }
-  
-  .empty-fee-state h3 {
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: #111827;
-    margin-bottom: 8px;
-  }
-  
-  .empty-fee-state p {
-    color: #6b7280;
-    text-align: center;
-    margin-bottom: 16px;
-  }
-  
-  .add-first-fee-btn {
-    padding: 8px 16px;
-    background-color: #111827;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .add-first-fee-btn:hover {
-    background-color: #1f2937;
-  }
-  
-  /* Loading State */
-  .loading-fee-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 16rem;
-    width: 77%;
-    margin-left: 300px;
-    margin-top: 20px;
-  }
-  
-  .loading-fee-spinner {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    border: 2px solid #e5e7eb;
-    border-top-color: #111827;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  @media (max-width: 320px) {
-    .fee-form {
-      width: 95%;
-      padding: 10px;
-    }
-  
-    .empty-fee-state,
-    .loading-fee-container {
-      margin-left: 5px;
-      width: 90%;
-    }
-  }
-  
-  @media (min-width: 321px) and (max-width: 576px) {
-    .fee-form {
-      width: 90%;
-      padding: 15px;
-    }
-  
-    .empty-fee-state,
-    .loading-fee-container {
-      margin-left: 5px;
-      width: 90%;
-    }
-  }
-  
-  @media (min-width: 577px) and (max-width: 768px) {
-    .fee-form {
-      width: 80%;
-    }
-  
-    .empty-fee-state,
-    .-fee-container {
-      margin-left: 10px;
-      width: 90%;
-    }
-  }
-  
-  @media (min-width: 769px) and (max-width: 992px) {
-    .fee-form {
-      width: 60%;
-    }
-  
-    .empty-fee-state,
-    .loading-fee-container {
-      margin-left: 10px;
-      width: 95%;
-    }
-  }
-  
-  @media (min-width: 950px) {
-    .fee-form {
-      width: 40%;
-    }
-  }
-  
-  @media (min-height: 770px) and (max-width: 950px) {
-    .fee-form {
-      max-height: 85vh;
-      overflow-y: auto;
-    }
-  }
-  
-  @media (max-width: 270px) {
-    table,
-    .empty-fee-state,
-    .loading-fee-container {
-      margin-top: 70px;
-      margin-left: 5px;
-      width: 75%;
-      margin-right: 10px;
-    }
-    thead th,
-    tbody td {
-      font-size: 12px;
-    }
-  }
-  
-  @media (min-width: 271px) and (max-width: 520px) {
-    table,
-    .empty-fee-state,
-    .loading-fee-container {
-      margin-top: 70px;
-      margin-left: 5px;
-      width: 85%;
-      font-size: 14px;
-    }
-    thead th,
-    tbody td {
-      font-size: 14px;
-    }
-  }
-  
-  @media (min-width: 521px) and (max-width: 860px) {
-    table,
-    .empty-fee-state,
-    .loading-fee-container {
-      margin-top: 70px;
-      margin-left: 10px;
-      width: 90%;
-    }
-    thead th,
-    tbody td {
-      font-size: 13px;
-    }
-  }
-  
-  @media (min-width: 861px) and (max-width: 950px) {
-    table,
-    .empty-fee-state,
-    .loading-fee-container {
-      margin-top: 70px;
-      margin-left: 10px;
-      width: 95%;
-      font-size: 16px;
-    }
-    thead th,
-    tbody td {
-      font-size: 16px;
-    }
-  }
-  
+}
+
+/* ===========================
+   Case Lookup Hint
+=========================== */
+.case-lookup-hint {
+  font-size: 0.8rem;
+  margin: -4px 0 2px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+.case-lookup-hint.found {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.case-lookup-hint.not-found {
+  background-color: #fff7ed;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+input[readonly] {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}

@@ -10,7 +10,7 @@ const [hearingDate, setHearingDates] = useState([]);
   useEffect(() => {
     const fetchHearingDates = async () => {
       try {
-        const response = await axios.get("https://juristiqbackend.onrender.com/hearings", { withCredentials: true });
+        const response = await axios.get("https://juristiq.onrender.com/hearings", { withCredentials: true });
 
         console.log("Fetched hearing dates:", response.data); // Debugging log
 
