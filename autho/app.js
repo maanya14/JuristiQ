@@ -363,62 +363,58 @@ app.get("/test-email", async (req, res) => {
 app.post("/advocate", async (req, res) => {
   const { name, email, age } = req.body;
   console.log(req.body);
-  
+
   if (!name || !email || !age) {
     return res.status(400).send("Name, email, and age are required.");
   }
 
   try {
-    // Validate environment variables
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error("Email credentials not configured in environment variables");
+    if (!process.env.BREVO_API_KEY) {
+      console.error("BREVO_API_KEY not configured in environment variables");
       return res.status(500).send("Email service is not configured");
     }
 
     // Generate OTP
     const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
     const otp = generateOtp();
-
     console.log("Generated OTP:", otp);
-    console.log("EMAIL_USER:", process.env.EMAIL_USER);
-    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
-    
 
-    // Configure the transporter for nodemailer
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      }
+    // Send via Brevo's HTTPS API (port 443 — not blocked on Render free tier, unlike SMTP)
+    console.log("Attempting to send email via Brevo API...");
+
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "juristiq", email: process.env.EMAIL_USER }, // must be a verified sender in Brevo
+        to: [{ email }],
+        subject: "Your OTP Code",
+        textContent: `Hello, your OTP code is: ${otp}`,
+      }),
     });
-    await transporter.verify();
-    console.log("SMTP verified");
 
-    // Email options
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Your OTP Code",
-      text: `Hello, your OTP code is: ${otp}`,
-    };
+    const result = await response.json();
 
-    // Send the email using promises
-    console.log("Attempting to send email...");
-    const result= await transporter.sendMail(mailOptions);
-    console.log("Mail result:", result);
-    console.log("Email sent successfully to:", email);
-    
+    if (!response.ok) {
+      console.error("Brevo API error:", result);
+      return res.status(500).send("Error sending OTP: " + (result.message || "Unknown error"));
+    }
+
+    console.log("Email sent successfully to:", email, result);
+
     // Temporarily store OTP in database without creating user
     await otpModel.create({ email, otp });
     res.status(200).send("OTP sent successfully");
-    
+
   } catch (error) {
-    console.error("Error sending OTP:", error);
+    console.error("Error sending OTP:", error.message);
     res.status(500).send("Error sending OTP: " + error.message);
   }
 });
-
 // POST endpoint to verify OTP and create user
 app.post("/verifyotp", async (req, res) => {
   const { name, email, age, otp } = req.body;
