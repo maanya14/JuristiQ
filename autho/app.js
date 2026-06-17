@@ -345,8 +345,8 @@ app.get("/test-email", async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.BREVO_USER,
-        pass: process.env.BREVO_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
@@ -370,7 +370,7 @@ app.post("/advocate", async (req, res) => {
 
   try {
     // Validate environment variables
-    if (!process.env.BREVO_USER || !process.env.BREVO_PASS) {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       console.error("Email credentials not configured in environment variables");
       return res.status(500).send("Email service is not configured");
     }
@@ -380,18 +380,16 @@ app.post("/advocate", async (req, res) => {
     const otp = generateOtp();
 
     console.log("Generated OTP:", otp);
-    console.log("BREVO_USER:", process.env.BREVO_USER);
-    console.log("BREVO_PASS exists:", !!process.env.BREVO_PASS);
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
     
 
     // Configure the transporter for nodemailer
     const transporter = nodemailer.createTransport({
-      host: "smtp-relay.brevo.com",
-      port: 587,
-      secure: false,
+      service: "gmail",
       auth: {
-        user: process.env.BREVO_USER,
-        pass: process.env.BREVO_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       }
     });
     await transporter.verify();
@@ -399,7 +397,7 @@ app.post("/advocate", async (req, res) => {
 
     // Email options
     const mailOptions = {
-      from: process.env.BREVO_USER,
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "Your OTP Code",
       text: `Hello, your OTP code is: ${otp}`,
