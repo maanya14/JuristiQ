@@ -8,6 +8,8 @@ function Clients() {
   const [showForm, setShowForm] = useState(false)
   const [clients, setClients] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
     //const API = import.meta.env.REACT_APP_API_URL // if using Vite
 
     useEffect(() => {
@@ -48,7 +50,7 @@ const fetchClients = async () => {
       console.log("New Client Added:", response.data)
 
       // Update state to reflect the new client
-      setClients((prevClients) => [...prevClients, response.data])
+      setClients((prevClients) => [...prevClients, response.data.client])
 
       // Hide the form after submission
       setShowForm(false)
@@ -56,6 +58,22 @@ const fetchClients = async () => {
     } catch (error) {
       console.error("Error adding client:", error)
       alert("Error adding client. Try again.")
+    }
+  }
+
+  const handleDeleteClient = async (clientId) => {
+    setDeletingId(clientId)
+    try {
+      await axios.delete(`https://juristiq.onrender.com/deleteclient/${clientId}`, {
+        withCredentials: true,
+      })
+      setClients((prevClients) => prevClients.filter((client) => client._id !== clientId))
+    } catch (error) {
+      console.error("Error deleting client:", error)
+      alert("Error deleting client. Try again.")
+    } finally {
+      setDeletingId(null)
+      setConfirmDeleteId(null)
     }
   }
 
@@ -78,7 +96,7 @@ const fetchClients = async () => {
           <div className="clients-grid">
             {Array.isArray(clients) && clients.length > 0 ? (
               clients.map((client, index) => (
-                <div key={index} className="client-card" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div key={client._id || index} className="client-card" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="card-header">
                     <div className="avatar-container">
                       <svg
@@ -131,8 +149,86 @@ const fetchClients = async () => {
                         </svg>
                         <span>Case Ref: {client.case_ref_no}</span>
                       </div>
+                      <div className="detail-item">
+                        {client.case ? (
+                          <span className="link-status link-status--linked">
+                            <svg
+                              className="detail-icon"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                            </svg>
+                            Linked to case
+                          </span>
+                        ) : (
+                          <span className="link-status link-status--unlinked">
+                            <svg
+                              className="detail-icon"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <line x1="12" y1="8" x2="12" y2="12"></line>
+                              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            No case linked yet
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div className="card-footer">
+                      {confirmDeleteId === client._id ? (
+                        <div className="confirm-delete">
+                          <span>Delete this client?</span>
+                          <div className="confirm-delete-actions">
+                            <button
+                              className="confirm-delete-btn"
+                              onClick={() => handleDeleteClient(client._id)}
+                              disabled={deletingId === client._id}
+                            >
+                              {deletingId === client._id ? "Deleting…" : "Yes, delete"}
+                            </button>
+                            <button
+                              className="cancel-delete-btn"
+                              onClick={() => setConfirmDeleteId(null)}
+                              disabled={deletingId === client._id}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          className="delete-client-btn"
+                          onClick={() => setConfirmDeleteId(client._id)}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                          </svg>
+                          Remove Client
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -192,6 +192,117 @@
     padding-top: 16px;
     border-top: 1px solid #f3f4f6;
   }
+
+  /* Case link status */
+  .link-status {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .link-status--linked {
+    color: #15803d;
+  }
+
+  .link-status--linked .detail-icon {
+    color: #15803d;
+  }
+
+  .link-status--unlinked {
+    color: #b45309;
+  }
+
+  .link-status--unlinked .detail-icon {
+    color: #b45309;
+  }
+
+  /* Delete client button */
+  .delete-client-btn {
+    width: 100%;
+    padding: 8px;
+    background-color: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .delete-client-btn svg {
+    height: 16px;
+    width: 16px;
+  }
+
+  .delete-client-btn:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+  }
+
+  .confirm-delete {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .confirm-delete span {
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .confirm-delete-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .confirm-delete-btn,
+  .cancel-delete-btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease;
+  }
+
+  .confirm-delete-btn {
+    background-color: #dc2626;
+    color: white;
+  }
+
+  .confirm-delete-btn:hover {
+    background-color: #b91c1c;
+  }
+
+  .confirm-delete-btn:disabled {
+    background-color: #fca5a5;
+    cursor: not-allowed;
+  }
+
+  .cancel-delete-btn {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+
+  .cancel-delete-btn:hover {
+    background-color: #e5e7eb;
+  }
+
+  .cancel-delete-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
   
   .view-details-btn {
     width: 100%;

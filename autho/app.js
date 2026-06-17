@@ -455,33 +455,110 @@ app.get("/casesinfo", isLoggedIn, async (req, res) => {
 app.post("/createcase", isLoggedIn, async (req, res) => {
   let user = await userModel.findOne({ email: req.user.email });
   try {
-    const { case_ref_no, caseTitle, clientName, status, nextHearing, fees, pending_fees } = req.body;
+    const {
+      case_ref_no,
+      caseTitle,
+      clientName,
+      phone,           // needed to create the client record (client.phone is required)
+      status,
+      nextHearing,
+      fees,
+      pending_fees,
+      payment_mode,    // optional, used if a fee record is created
+      due_date,        // optional, used if a fee record is created
+    } = req.body;
 
-    // Create a new case
+    if (!case_ref_no) {
+      return res.status(400).json({ success: false, message: "case_ref_no is required" });
+    }
+
+    // Reject duplicate case_ref_no up front with a clean message
+    // (the schema's unique index would also catch this, but this gives a nicer error)
+    const existingCase = await casesModel.findOne({ case_ref_no });
+    if (existingCase) {
+      return res.status(400).json({ success: false, message: "A case with this reference number already exists" });
+    }
+
+    // --- 1. Find or create the client for this case_ref_no ---
+    let client = await clientModel.findOne({ case_ref_no });
+    if (!client) {
+      if (!clientName || !phone) {
+        return res.status(400).json({
+          success: false,
+          message: "clientName and phone are required to create a new client for this case",
+        });
+      }
+      client = await clientModel.create({
+        user: user._id,
+        client_name: clientName,
+        phone,
+        case_ref_no,
+      });
+      user.client.push(client._id);
+    }
+
+    // --- 2. Find or create the fee record for this case_ref_no ---
+    let feeRecord = await FeesModel.findOne({ case_ref_no });
+    if (!feeRecord && fees !== undefined && fees !== null) {
+      feeRecord = await FeesModel.create({
+        user: user._id,
+        case_ref_no,
+        clientName: client.client_name,
+        fees,
+        amount_paid: 0,
+        pending_fees: pending_fees !== undefined ? pending_fees : fees,
+        payment_mode: payment_mode || "Cash",
+        due_date: due_date ? new Date(due_date) : new Date(),
+      });
+      user.fees.push(feeRecord._id);
+    }
+
+    // --- 3. Create the case, linking both ---
     const newCase = await casesModel.create({
       user: user._id,
       case_ref_no,
       caseTitle,
-      clientName,
+      clientName: client.client_name, // always sourced from the client record now
+      client: client._id,
+      feeRecord: feeRecord ? feeRecord._id : undefined,
       status,
-      nextHearing: nextHearing, // Match field name in schema
-      fees,
-      pending_fees,
+      nextHearing,
+      fees: feeRecord ? feeRecord.fees : fees,
+      pending_fees: feeRecord ? feeRecord.pending_fees : pending_fees,
     });
-    await newCase.save();
-    user.cases.push(newCase._id);
 
+    // --- 4. Backfill the reverse links now that the case exists ---
+    client.case = newCase._id;
+    await client.save();
+    if (feeRecord) {
+      feeRecord.case = newCase._id;
+      await feeRecord.save();
+    }
+
+    user.cases.push(newCase._id);
     await user.save();
-    res.status(201).json({ success: true, message: "Case created successfully", case: newCase });
+
+    res.status(201).json({
+      success: true,
+      message: "Case created successfully",
+      case: newCase,
+      client,
+      feeRecord,
+    });
   } catch (error) {
     console.error("Error creating case:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ success: false, message: "Duplicate case reference number" });
+    }
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 app.put("/updatecase/:case_ref_no", async (req, res) => {
   try {
+    const caseRefNo = Number(req.params.case_ref_no);
+
     const updatedCase = await casesModel.findOneAndUpdate(
-      { case_ref_no: req.params.case_ref_no },
+      { case_ref_no: caseRefNo },
       {
         caseTitle: req.body.caseTitle,
         clientName: req.body.clientName,
@@ -495,6 +572,21 @@ app.put("/updatecase/:case_ref_no", async (req, res) => {
 
     if (!updatedCase) {
       return res.status(404).json({ success: false, message: "Case not found" });
+    }
+
+    // Keep the linked fee record in sync so editing fees on the case
+    // actually reaches the fees collection instead of just the case doc.
+    if (updatedCase.feeRecord && (req.body.fees !== undefined || req.body.pending_fees !== undefined)) {
+      const feeUpdate = {};
+      if (req.body.fees !== undefined) feeUpdate.fees = req.body.fees;
+      if (req.body.pending_fees !== undefined) feeUpdate.pending_fees = req.body.pending_fees;
+      if (req.body.clientName !== undefined) feeUpdate.clientName = req.body.clientName;
+      await FeesModel.findByIdAndUpdate(updatedCase.feeRecord, feeUpdate);
+    }
+
+    // Keep the linked client's name in sync too.
+    if (updatedCase.client && req.body.clientName !== undefined) {
+      await clientModel.findByIdAndUpdate(updatedCase.client, { client_name: req.body.clientName });
     }
 
     res.status(200).json({ success: true, message: "Case updated successfully", case: updatedCase });
@@ -562,9 +654,25 @@ app.post("/createclient", isLoggedIn, async (req, res) => {
       return res.status(400).json({ message: "Case reference number already exists for this user" });
     }
 
+    // If a case with this case_ref_no already exists (e.g. it was created
+    // before the client was), link the two together both ways.
+    const matchingCase = await casesModel.findOne({ case_ref_no });
+
     // Create a new client associated with the logged-in user
-    const newClient = new clientModel({ client_name, phone, case_ref_no, user: user._id });
+    const newClient = new clientModel({
+      client_name,
+      phone,
+      case_ref_no,
+      user: user._id,
+      case: matchingCase ? matchingCase._id : undefined,
+    });
     await newClient.save();
+
+    if (matchingCase && !matchingCase.client) {
+      matchingCase.client = newClient._id;
+      matchingCase.clientName = newClient.client_name;
+      await matchingCase.save();
+    }
 
     // Link the client to the user
     user.client.push(newClient._id);
@@ -675,6 +783,10 @@ app.post("/createfee", isLoggedIn, async (req, res) => {
       return res.status(400).json({ success: false, message: "All fields are required." });
     }
 
+    // If a case with this case_ref_no already exists (e.g. it was created
+    // before the fee record was), link the two together both ways.
+    const matchingCase = await casesModel.findOne({ case_ref_no });
+
     const newFee = new FeesModel({
       user: user._id,
       case_ref_no,
@@ -685,10 +797,17 @@ app.post("/createfee", isLoggedIn, async (req, res) => {
       payment_mode,
       due_date: new Date(due_date),
       remarks,
+      case: matchingCase ? matchingCase._id : undefined,
     });
 
     await newFee.save();
 
+    if (matchingCase && !matchingCase.feeRecord) {
+      matchingCase.feeRecord = newFee._id;
+      matchingCase.fees = newFee.fees;
+      matchingCase.pending_fees = newFee.pending_fees;
+      await matchingCase.save();
+    }
 
     user.fees.push(newFee._id);
     await user.save();
@@ -741,6 +860,16 @@ app.put("/updatefee/:id", async (req, res) => {
   try {
     const updatedFee = await FeesModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedFee) return res.status(404).json({ message: "Fee record not found" });
+
+    // Keep the linked case's fees/pending_fees in sync, the other direction
+    // of the same fix applied in /updatecase.
+    if (updatedFee.case && (req.body.fees !== undefined || req.body.pending_fees !== undefined)) {
+      const caseUpdate = {};
+      if (req.body.fees !== undefined) caseUpdate.fees = req.body.fees;
+      if (req.body.pending_fees !== undefined) caseUpdate.pending_fees = req.body.pending_fees;
+      await casesModel.findByIdAndUpdate(updatedFee.case, caseUpdate);
+    }
+
     res.json({ message: "Fee record updated successfully!", updatedFee });
   } catch (error) {
     console.error("Error updating fee record:", error);
@@ -757,6 +886,38 @@ app.delete("/deletefee/:id", async (req, res) => {
   } catch (error) {
     console.error("Error deleting fee record:", error);
     res.status(500).json({ message: "Failed to delete fee record" });
+  }
+});
+app.delete("/deleteclient/:id", isLoggedIn, async (req, res) => {
+  try {
+    const user = await userModel.findOne({ email: req.user.email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const deletedClient = await clientModel.findByIdAndDelete(req.params.id);
+    if (!deletedClient) {
+      return res.status(404).json({ success: false, message: "Client not found" });
+    }
+
+    // Clear the reverse link on the case this client belonged to, so the
+    // case doesn't keep pointing at a deleted client.
+    if (deletedClient.case) {
+      await casesModel.findByIdAndUpdate(deletedClient.case, {
+        $unset: { client: "" },
+      });
+    }
+
+    // Remove the client's id from the user's client array
+    user.client = user.client.filter(
+      (clientId) => clientId.toString() !== deletedClient._id.toString()
+    );
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Client deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting client:", error);
+    res.status(500).json({ success: false, message: "Failed to delete client" });
   }
 });
 app.get("/verify-token", (req, res) => {
