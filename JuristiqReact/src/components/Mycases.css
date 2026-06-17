@@ -1,24 +1,27 @@
+/* ===========================
+   Layout
+=========================== */
 .case-management-container {
   position: relative;
   width: 100%;
   min-height: 100vh;
 }
 
+/* ===========================
+   Floating Add Button
+=========================== */
 .add-case-button {
   border: none;
   height: 50px;
   width: 50px;
   position: fixed;
   bottom: 20px;
-  border-radius: 50%;
   right: 20px;
   z-index: 1000;
   background-color: black;
+  border-radius: 50%;
   padding: 10px;
   color: white;
-  font-size: larger;
-  font-weight: bolder;
-  font-family: "Times New Roman", Times, serif;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -32,12 +35,29 @@
   background-color: #333;
 }
 
+.plus-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===========================
+   Overlay
+=========================== */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   z-index: 40;
@@ -47,105 +67,119 @@
   display: none;
 }
 
+/* ===========================
+   Modal Form
+=========================== */
 .case-form {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
-  padding: 20px;
+  padding: 24px;
   border-radius: 10px;
   z-index: 50;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 400px;
-  max-width: 90vw;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  width: 420px;
+  max-width: 92vw;
   max-height: 90vh;
   overflow-y: auto;
 }
 
 .case-box {
-  background: white;
-  padding: 10px;
-  border-radius: 10px;
-  width: 100%;
-  text-align: center;
-}
-
-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 label {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #374151;
   text-align: left;
-  font-weight: 500;
 }
 
 input,
-select {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
+select,
+textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
   width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #111827;
+}
+
+textarea {
+  resize: vertical;
 }
 
 .submit-case {
   padding: 0.7rem;
-  background-color: black;
+  background-color: #111827;
   color: white;
-  font-family: "Times New Roman", Times, serif;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 6px;
   transition: background-color 0.2s;
 }
 
 .submit-case:hover {
-  background-color: #1d1c1c;
+  background-color: #374151;
 }
 
+/* ===========================
+   Table Area
+=========================== */
 .table-container {
-  width: 90%;
-  margin: 5px auto;
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* Offset left for sidebar (~260px) with some breathing room */
+  margin-left: 280px;
+  margin-top: 24px;
+  margin-right: 24px;
+  padding-bottom: 80px; /* space above FAB */
 }
 
 table {
-  margin-left: 300px;
-  margin-top: 20px;
-  width: 77%;
+  width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   background: #f8f9fa;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  position: absolute;
-  left: 5px;
-  top: 5px;
 }
+
 thead {
-  background: black;
+  background: #111827;
 }
 
 th,
 td {
   padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 th {
   color: white;
   font-weight: 500;
+  font-size: 0.875rem;
+}
+
+td {
+  font-size: 0.875rem;
+  color: #374151;
 }
 
 tbody tr:last-child td {
@@ -154,40 +188,44 @@ tbody tr:last-child td {
 
 tbody tr:hover {
   background: #eaeaea;
-  transition: 0.3s;
+  transition: background 0.2s;
 }
 
-/* Buttons inside Actions column */
+/* ===========================
+   Action Buttons
+=========================== */
 .edit-btn,
 .delete-btn {
-  padding: 6px 12px;
+  padding: 5px 11px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   margin: 2px;
-  transition: all 0.3s ease-in-out;
+  transition: background 0.2s, transform 0.1s;
 }
 
 .edit-btn {
-  background: #007bff;
+  background: #2563eb;
   color: white;
 }
 
 .delete-btn {
-  background: #dc3545;
+  background: #dc2626;
   color: white;
 }
 
 .edit-btn:hover {
-  background: #0056b3;
+  background: #1d4ed8;
 }
 
 .delete-btn:hover {
-  background: #b22222;
+  background: #b91c1c;
 }
 
-/* Empty State */
+/* ===========================
+   Empty State
+=========================== */
 .empty-cases-state {
   display: flex;
   flex-direction: column;
@@ -198,10 +236,10 @@ tbody tr:hover {
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   padding: 32px;
-  width: 77%;
-  margin-left: 300px;
-  margin-top: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  margin-left: 280px;
+  margin-top: 24px;
+  margin-right: 24px;
 }
 
 .empty-cases-icon-container {
@@ -218,7 +256,7 @@ tbody tr:hover {
 }
 
 .empty-cases-state h3 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 500;
   color: #111827;
   margin-bottom: 8px;
@@ -238,22 +276,24 @@ tbody tr:hover {
   border-radius: 0.5rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s;
 }
 
 .add-first-client-btn:hover {
-  background-color: #1f2937;
+  background-color: #374151;
 }
 
-/* Loading State */
+/* ===========================
+   Loading State
+=========================== */
 .loading-cases-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 16rem;
-  width: 77%;
-  margin-left: 300px;
-  margin-top: 20px;
+  margin-left: 280px;
+  margin-top: 24px;
+  margin-right: 24px;
 }
 
 .loading-cases-spinner {
@@ -271,28 +311,36 @@ tbody tr:hover {
   }
 }
 
-/* Responsive Media Queries */
+/* ===========================
+   Responsive — Tablet & Mobile
+   Sidebar collapses below ~860px
+=========================== */
+@media (max-width: 860px) {
+  .table-container,
+  .empty-cases-state,
+  .loading-cases-container {
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-top: 70px; /* space for top navbar / hamburger */
+  }
 
-/* Extra Small Devices (phones, 320px and down) */
-@media (max-width: 320px) {
+  th,
+  td {
+    font-size: 13px;
+    padding: 10px 10px;
+  }
+}
+
+@media (max-width: 520px) {
   .case-form {
-    width: 95%;
-    padding: 10px;
+    width: 94vw;
+    padding: 16px;
   }
 
-  .case-box {
-    padding: 5px;
-  }
-
-  input,
-  select {
-    padding: 5px;
-    font-size: 14px;
-  }
-
-  .submit-case {
-    padding: 8px;
-    font-size: 14px;
+  th,
+  td {
+    font-size: 12px;
+    padding: 8px 8px;
   }
 
   .edit-btn,
@@ -300,79 +348,24 @@ tbody tr:hover {
     padding: 4px 8px;
     font-size: 12px;
   }
-
-  .empty-cases-state,
-  .loading-cases-container {
-    margin-left: 5px;
-    width: 90%;
-  }
 }
 
-/* Small Devices (phones, 321px to 576px) */
-@media (min-width: 321px) and (max-width: 576px) {
+@media (max-width: 320px) {
   .case-form {
-    width: 90%;
-    padding: 15px;
+    width: 96vw;
+    padding: 10px;
   }
 
-  .empty-cases-state,
-  .loading-cases-container {
-    margin-left: 5px;
-    width: 90%;
-  }
-}
-
-/* Medium Devices (tablets, 577px to 768px) */
-@media (min-width: 577px) and (max-width: 768px) {
-  .case-form {
-    width: 80%;
-  }
-
-  .empty-cases-state,
-  .loading-cases-container {
-    margin-left: 10px;
-    width: 90%;
+  th,
+  td {
+    font-size: 11px;
+    padding: 6px 6px;
   }
 }
 
-/* Large Devices (desktops, 769px to 992px) */
-@media (min-width: 769px) and (max-width: 992px) {
-  .case-form {
-    width: 60%;
-  }
-
-  .empty-cases-state,
-  .loading-cases-container {
-    margin-left: 10px;
-    width: 95%;
-  }
-}
-
-/* Extra Large Devices (large desktops, 993px and up) */
-@media (min-width: 950px) {
-  .case-form {
-    width: 40%;
-  }
-}
-
-/* Landscape orientation adjustments */
-@media (min-height: 770px) and (max-width: 950px) {
-  .case-form {
-    max-height: 85vh;
-    overflow-y: auto;
-  }
-
-  form {
-    gap: 5px;
-  }
-
-  input,
-  select {
-    padding: 5px;
-  }
-}
-
-/* Print styles */
+/* ===========================
+   Print
+=========================== */
 @media print {
   .add-case-button,
   .edit-btn,
@@ -382,15 +375,13 @@ tbody tr:hover {
     display: none !important;
   }
 
-  table {
-    width: 100% !important;
+  .table-container {
     margin: 0 !important;
-    box-shadow: none !important;
   }
 
-  body,
   table {
-    font-size: 12pt;
+    width: 100% !important;
+    box-shadow: none !important;
   }
 
   thead {
@@ -399,64 +390,5 @@ tbody tr:hover {
 
   th {
     color: black !important;
-  }
-}
-
-@media (max-width: 270px) {
-  table,
-  .empty-cases-state,
-  .loading-cases-container {
-    margin-top: 70px;
-    margin-left: 5px;
-    width: 75%;
-    margin-right: 10px;
-  }
-  thead th,
-  tbody td {
-    font-size: 12px;
-  }
-}
-
-@media (min-width: 271px) and (max-width: 520px) {
-  table,
-  .empty-cases-state,
-  .loading-cases-container {
-    margin-top: 70px;
-    margin-left: 5px;
-    width: 85%;
-    font-size: 14px;
-  }
-  thead th,
-  tbody td {
-    font-size: 14px;
-  }
-}
-
-@media (min-width: 521px) and (max-width: 860px) {
-  table,
-  .empty-cases-state,
-  .loading-cases-container {
-    margin-top: 70px;
-    margin-left: 10px;
-    width: 90%;
-  }
-  thead th,
-  tbody td {
-    font-size: 13px;
-  }
-}
-
-@media (min-width: 861px) and (max-width: 950px) {
-  table,
-  .empty-cases-state,
-  .loading-cases-container {
-    margin-top: 70px;
-    margin-left: 10px;
-    width: 95%;
-    font-size: 16px;
-  }
-  thead th,
-  tbody td {
-    font-size: 16px;
   }
 }

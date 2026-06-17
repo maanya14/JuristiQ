@@ -7,8 +7,7 @@ import "./Mycases.css"
 function MyCases() {
   const [showForm, setShowForm] = useState(false)
   const [cases, setCases] = useState([])
-  const [editingCase, setEditingCase] = useState(null) // Track the case being edited
-  //const API = import.meta.env.REACT_APP_API_URL // if using Vite
+  const [editingCase, setEditingCase] = useState(null)
 
   useEffect(() => {
     fetchCases()
@@ -17,70 +16,100 @@ function MyCases() {
   const fetchCases = async () => {
     try {
       const response = await axios.get("https://juristiq.onrender.com/getcases", {
-        withCredentials: true, // Ensures cookies are sent
-      });
-  
-      console.log("Response Data:", response.data); // Debugging
-  
-      setCases(response.data);
+        withCredentials: true,
+      })
+      setCases(response.data)
     } catch (error) {
-      console.error("Error fetching cases:", error.response?.data || error);
-      setCases([]);
+      console.error("Error fetching cases:", error.response?.data || error)
+      setCases([])
     }
-  };
-  
+  }
 
   const handleClick = () => {
     setShowForm(!showForm)
-    setEditingCase(null) // Reset editing state when toggling
+    setEditingCase(null)
   }
 
   const handleFormSubmit = async (e) => {
     e.preventDefault()
 
     const formData = new FormData(e.target)
-    const newCase = {
-      case_ref_no: Number(formData.get("case_ref_no")),
-      caseTitle: formData.get("caseTitle"),
-      clientName: formData.get("clientName"),
-      status: formData.get("status"),
-      nextHearing: formData.get("hearingDate") ? new Date(formData.get("hearingDate")).toISOString() : null,
-      fees: Number(formData.get("totalFees")),
-      amount_paid: Number(formData.get("amountPaid")),
-    }
+    const totalFees = Number(formData.get("totalFees"))
+    const amountPaid = Number(formData.get("amountPaid"))
+    const pendingFees = totalFees - amountPaid
 
-    // Basic Form Validation
-    if (!newCase.case_ref_no || !newCase.caseTitle || !newCase.clientName || !newCase.status) {
-      alert("Please fill all the required fields.")
-      return
-    }
-
-    try {
-      if (editingCase) {
-        // Update Case (PUT request)
-        await axios.put(`https://juristiq.onrender.com/updatecase/${editingCase.case_ref_no}`, newCase)
-      } else {
-        // Add New Case (POST request)
-        await axios.post("https://juristiq.onrender.com/createcase", newCase ,{withCredentials: true})
+    if (editingCase) {
+      // updatecase only needs these fields (no phone, no amount_paid)
+      const updatePayload = {
+        caseTitle: formData.get("caseTitle"),
+        clientName: formData.get("clientName"),
+        status: formData.get("status"),
+        nextHearing: formData.get("hearingDate")
+          ? new Date(formData.get("hearingDate")).toISOString()
+          : null,
+        fees: totalFees,
+        pending_fees: pendingFees,
       }
 
-      // Reset the form and fetch updated data
-      e.target.reset()
-      setEditingCase(null) // Exit edit mode
-      setShowForm(false) // Close the form
-      fetchCases() // Refresh the table
-    } catch (error) {
-      console.error("Error processing case:", error)
-      alert("Error adding/updating case. Try again.")
+      if (!updatePayload.caseTitle || !updatePayload.clientName || !updatePayload.status) {
+        alert("Please fill all the required fields.")
+        return
+      }
+
+      try {
+        await axios.put(
+          `https://juristiq.onrender.com/updatecase/${editingCase.case_ref_no}`,
+          updatePayload
+        )
+        e.target.reset()
+        setEditingCase(null)
+        setShowForm(false)
+        fetchCases()
+      } catch (error) {
+        console.error("Error updating case:", error)
+        alert("Error updating case. Try again.")
+      }
+    } else {
+      // createcase requires: case_ref_no, caseTitle, clientName, phone, status, nextHearing, fees, pending_fees
+      const newCase = {
+        case_ref_no: Number(formData.get("case_ref_no")),
+        caseTitle: formData.get("caseTitle"),
+        clientName: formData.get("clientName"),
+        phone: formData.get("phone"),
+        status: formData.get("status"),
+        nextHearing: formData.get("hearingDate")
+          ? new Date(formData.get("hearingDate")).toISOString()
+          : null,
+        fees: totalFees,
+        pending_fees: pendingFees,
+      }
+
+      if (!newCase.case_ref_no || !newCase.caseTitle || !newCase.clientName || !newCase.phone || !newCase.status) {
+        alert("Please fill all the required fields.")
+        return
+      }
+
+      try {
+        await axios.post("https://juristiq.onrender.com/createcase", newCase, {
+          withCredentials: true,
+        })
+        e.target.reset()
+        setEditingCase(null)
+        setShowForm(false)
+        fetchCases()
+      } catch (error) {
+        console.error("Error creating case:", error)
+        const msg = error.response?.data?.message || "Error adding case. Try again."
+        alert(msg)
+      }
     }
   }
 
   const handleDelete = async (case_ref_no) => {
     if (!window.confirm("Are you sure you want to delete this case?")) return
-
     try {
       await axios.delete(`https://juristiq.onrender.com/deletecase/${case_ref_no}`)
-      fetchCases() // Refresh table after delete
+      fetchCases()
     } catch (error) {
       console.error("Error deleting case:", error)
       alert("Failed to delete case. Try again.")
@@ -88,8 +117,8 @@ function MyCases() {
   }
 
   const handleEdit = (caseItem) => {
-    setEditingCase(caseItem) // Set the case being edited
-    setShowForm(true) // Open the form
+    setEditingCase(caseItem)
+    setShowForm(true)
   }
 
   return (
@@ -117,7 +146,7 @@ function MyCases() {
           <div className="overlay" onClick={handleClick}></div>
           <div className="case-form">
             <form className="case-box" onSubmit={handleFormSubmit}>
-              <label>Case ref no.:</label>
+              <label>Case Ref No.:</label>
               <input
                 type="number"
                 name="case_ref_no"
@@ -129,8 +158,16 @@ function MyCases() {
               <label>Case Title:</label>
               <input type="text" name="caseTitle" required defaultValue={editingCase?.caseTitle} />
 
-              <label>Client name:</label>
+              <label>Client Name:</label>
               <input type="text" name="clientName" required defaultValue={editingCase?.clientName} />
+
+              {/* Phone only needed when creating a new case (to create the client record) */}
+              {!editingCase && (
+                <>
+                  <label>Client Phone:</label>
+                  <input type="tel" name="phone" required placeholder="e.g. 9876543210" />
+                </>
+              )}
 
               <label>Status:</label>
               <select name="status" required defaultValue={editingCase?.status}>
@@ -140,21 +177,33 @@ function MyCases() {
                 <option value="Won">Won</option>
               </select>
 
-              <label>Next hearing:</label>
+              <label>Next Hearing:</label>
               <input
                 type="date"
                 name="hearingDate"
                 required
                 defaultValue={
-                  editingCase?.nextHearing ? new Date(editingCase.nextHearing).toISOString().split("T")[0] : ""
+                  editingCase?.nextHearing
+                    ? new Date(editingCase.nextHearing).toISOString().split("T")[0]
+                    : ""
                 }
               />
 
-              <label>Total fees:</label>
-              <input type="number" name="totalFees" required defaultValue={editingCase?.fees} />
+              <label>Total Fees:</label>
+              <input type="number" name="totalFees" min="0" required defaultValue={editingCase?.fees} />
 
               <label>Amount Paid:</label>
-              <input type="number" name="amountPaid" required defaultValue={editingCase?.amount_paid} />
+              <input
+                type="number"
+                name="amountPaid"
+                min="0"
+                required
+                defaultValue={
+                  editingCase
+                    ? editingCase.fees - editingCase.pending_fees
+                    : ""
+                }
+              />
 
               <button className="submit-case" type="submit">
                 {editingCase ? "Update" : "Submit"}
@@ -179,94 +228,40 @@ function MyCases() {
             </tr>
           </thead>
           <tbody>
-  {Array.isArray(cases) && cases.length > 0 ? (
-    cases.map((caseItem, index) => (
-      <tr key={index}>
-        <td>{caseItem.case_ref_no}</td>
-        <td>{caseItem.caseTitle}</td>
-        <td>{caseItem.clientName}</td>
-        <td>{caseItem.status}</td>
-        <td>{caseItem.nextHearing ? new Date(caseItem.nextHearing).toLocaleDateString("en-GB") : "N/A"}</td>
-        <td>{caseItem.fees}</td>
-       <td>{caseItem.fees - caseItem.amount_paid}</td>
-        <td>
-          <button className="edit-btn" onClick={() => handleEdit(caseItem)}>
-            Update
-          </button>
-          <button className="delete-btn" onClick={() => handleDelete(caseItem.case_ref_no)}>
-            Delete
-          </button>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="8">No cases available</td>
-    </tr>
-  )}
-</tbody>
-
-</table>
+            {Array.isArray(cases) && cases.length > 0 ? (
+              cases.map((caseItem, index) => (
+                <tr key={index}>
+                  <td>{caseItem.case_ref_no}</td>
+                  <td>{caseItem.caseTitle}</td>
+                  <td>{caseItem.clientName}</td>
+                  <td>{caseItem.status}</td>
+                  <td>
+                    {caseItem.nextHearing
+                      ? new Date(caseItem.nextHearing).toLocaleDateString("en-GB")
+                      : "N/A"}
+                  </td>
+                  <td>{caseItem.fees}</td>
+                  <td>{caseItem.pending_fees}</td>
+                  <td>
+                    <button className="edit-btn" onClick={() => handleEdit(caseItem)}>
+                      Update
+                    </button>
+                    <button className="delete-btn" onClick={() => handleDelete(caseItem.case_ref_no)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8">No cases available</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   )
 }
 
 export default MyCases
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
